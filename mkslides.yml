@@ -1,0 +1,116 @@
+# Configuration for the generated index page
+
+index:
+    # Enables or disables the "Documentation built with MkSlides." footer:
+    # boolean
+    enable_footer: false
+
+    # Favicon of the generated index page: file path or public url to favicon
+    # file
+    favicon: slide_data/data/unibe_transit_icon2.ico
+
+    # Navigation section describing how to structure the slides on the index
+    # page. This is similar to the `nav` option from MkDocs: list[any]
+    nav:
+    - 1.1; Intro; General intro: Week01_intro/1_General_introduction.md
+    - 1.2; Intro; Installation: Week01_intro/2_Installation_instructions.md
+    - 1.3; Intro; Coding & stats: Week01_intro/3_Coding_refresher.md
+    - 1.4; Intro; Presentation advice: Week01_intro/4_Presentation_marking_guidelines.md
+    - 2.1; Stars & Gaia: Week02_3_GaiaStars/Stars_presentation.md
+    - 3.1; Transits: Week04_5_Transits/Transits_presentation.md
+    - 4.1; RVs: Week06_7_RVs/RVs_presentation.md
+    - 5.1; Interiors: Week08_9_InteriorStructures/Interiors_presentation.md
+    - 6.1; Imaging: Week10_11_Imaging/Imaging_presentation.md
+    - 7.1; JWST Spectroscopy: Week12_13_JWST_spectroscopy/JWST_presentation.md
+    - 8.1; Final project: Week14_Projects/1_ideas.md
+    - 8.2; Final project marking: Week14_Projects/2_Final_report_marking_guidelines.md
+    # Title of the generated index page: string
+    title: Data Analysis for Exoplanets
+
+    # Jinja 2 template to generate index HTML: file path to Jinja2 file
+    # template: example.jinja
+
+    # Theme of the generated index page: file path or public url to CSS file
+    theme: slide_data/data/hohgent_index_custom.css
+    #https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css
+
+# Configuration for the slides
+slides:
+    # Charset of the slides: string
+    # (see https://revealjs.com/markdown/#external-markdown)
+    charset: utf-8
+
+    # Favicon of the slides: file path or public url to favicon file
+    favicon: all_slides/slide_data/data/unibe_transit_icon2.ico
+
+    # Theme for syntax highlighting of code fragments on the slides: file path
+    # to CSS file, public url to CSS file, or one of the highlight.js built-in
+    # themes such as `monokai`, `obsidian`, `tokyo-night-dark`, `vs`, ...
+    # (see https://highlightjs.org/examples)
+    highlight_theme: vs
+    #example-slides-highlight-theme.css
+
+    # Relative path to a python script containing a function
+    # Callable[[str], str] named `preprocess`. Important: a relative file path
+    # here is considered relative to the configuration file, as you probably
+    # don't want to serve the python scripts.
+    # For each Markdown file, the whole file content is given to the function as
+    # a str. The returned string is then further processed as the Markdown to
+    # give to Reveal.js
+    preprocess_script: data/preprocessor.py
+
+    # Separator to determine notes of the slide: regexp
+    # (see https://revealjs.com/markdown/#external-markdown)
+    separator_notes: "^Notes?:"
+
+    # Separator to determine end current/begin new vertical slide: regexp
+    # (see https://revealjs.com/markdown/#external-markdown)
+    separator_vertical: '^\s*-v-\s*$' #^\s*-v-\s*$
+
+    # Separator to determine end current/begin new slide: regexp
+    # (see https://revealjs.com/markdown/#external-markdown)
+    separator: ^\s*---\s*$
+
+    # Jinja 2 template to generate index HTML: file path to Jinja2 file
+    #template: ./example.jinja
+
+    # Theme of the slides: file path to CSS file, public url to CSS file, or one
+    # of the reveal.js themes such as `black`, `white`, `league`, `solarized`,
+    # `dracula`, ... (see https://revealjs.com/themes/)
+    theme: slide_data/data/hohgent_slides_custom.css
+
+# Options to be passed to reveal.js: options in yaml format, they will be
+# translated to JSON automatically (see https://revealjs.com/config/)
+revealjs:
+    height: 1080
+    width: 1920
+    transition: fade
+    pdfSeparateFragments: false
+    #example_plugin:
+    #    example_plugin_option_A: true
+    #    example_plugin_option_B: qwerty
+
+# Plugins or additional CSS/JavaScript files for the slides. These are given as
+# a list.
+plugins:
+  - name: RevealMermaid
+    extra_javascript:
+      - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
+  - extra_javascript:
+      - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js
+#     # Name of the plugin (optional, see plugin README): plugin id string
+#     # (see https://revealjs.com/creating-plugins/#registering-a-plugin)
+#     - name: RevealExamplePlugin
+#       # List of CSS files of the plugin (optional, see plugin README):
+#       # public url to CSS file per entry
+#       extra_css:
+#           - https://cdn.jsdelivr.net/npm/reveal.js-example-pluging/example.min.css
+#       # List of JavaScript files of the plugin (optional, see plugin README):
+#       # public url to JavaScript file per entry
+#       extra_javascript:
+#           - https://cdn.jsdelivr.net/npm/reveal.js-example-pluging/example.min.js
+#     - name: RevealMermaid
+#       extra_javascript:
+#           - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
+#     - extra_javascript:
+#           - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js

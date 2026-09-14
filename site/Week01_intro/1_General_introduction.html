@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+        
+            <link rel="icon" href="../all_slides/slide_data/data/unibe_transit_icon2.ico">
+        
+
+        <link rel="stylesheet" href="../mkslides-assets/reveal-js/dist/reveal.css" />
+
+        
+            <link rel="stylesheet" href="../slide_data/data/hohgent_slides_custom.css" />
+        
+        
+            <link rel="stylesheet" href="../mkslides-assets/highlight-js-themes/vs.css" />
+        
+
+        
+            
+        
+            
+        
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section data-markdown
+                
+                    data-separator="^\s*---\s*$"
+                
+                    data-separator-vertical="^\s*-v-\s*$"
+                
+                    data-separator-notes="^Notes?:"
+                
+                    data-charset="utf-8"
+                
+                >
+                    <!-- The markdown must be placed to the whole left to prevent indentation issues like https://github.com/MartenBE/mkslides/issues/52 -->
+                    <textarea data-template>
+# Exoplanetary science = Data science
+The vast majority of exoplanetary science is, in fact, **data science**.
+<!-- .element: class="fragment" -->
+- API/SQL database access
+<!-- .element: class="fragment" -->
+- Regression & classification
+<!-- .element: class="fragment" -->
+- Model building, optimising, sampling.
+<!-- .element: class="fragment" -->
+- Data visualisation
+<!-- .element: class="fragment" -->
+
+-v-
+
+## Most problems in observational astronomy can be thought of in the following way:
+1) Imagine a **hypothesis** (transit, supernova, etc)
+<!-- .element: class="fragment" -->
+2) Create a **parameterised model** translating physics into observables
+<!-- .element: class="fragment" -->
+3) Take **observations** (+ "reduce" them, e.g. remove systematic noise)
+<!-- .element: class="fragment" -->
+4) **Fit** the model to the observations
+<!-- .element: class="fragment" -->
+5) **Sample** the parameters to derive uncertainties
+<!-- .element: class="fragment" -->
+6) Use **model comparison** to test whether the hypothesis is justified
+<!-- .element: class="fragment" -->
+
+---
+# Introducing myself
+
+I try to find _transiting exoplanets_ using data from space telescopes (e.g. TESS), and then I confirm & characterise them using ground-based telescopes.
+
+Most interesting recent example, **HD110067**, a resonant chain of 6 planets which I discovered
+
+-v-
+<img src="../slide_data/slide_images/hd110067_data.png" class="r-stretch" />
+
+---
+# We learn by _doing_.
+- I will usually provide one bare-bones examples which require _thinking_ to complete a simplified version.
+<!-- .element: class="fragment" -->
+- With this knowledge in hand, we can see how existing astronomical software runs and apply to some real data
+<!-- .element: class="fragment" -->
+- There will be multiple examples provided
+<!-- .element: class="fragment" -->
+
+-v-
+
+# We learn by _showing_
+- For each topic, each of you will create a short (<10 minute, ~5 slide) presentation each of which will be worth ~7.5% of the total credit
+<!-- .element: class="fragment" -->
+
+---
+
+# 2-week structure:
+- Monday 16:00: presenting previous week's project
+<!-- .element: class="fragment" -->
+- Monday 17:00: Introduction to new subject (slides)
+<!-- .element: class="fragment" -->
+- Tuesday 09:00: Introduction to simple code (python)
+<!-- .element: class="fragment" -->
+- [1 week take-home playing with more difficult code/data/etc.]
+<!-- .element: class="fragment" -->
+- Monday 16:00-18:00: Advanced coding sessions (python)
+<!-- .element: class="fragment" -->
+- Tuesday 09:00: Open door policy for specific questions
+<!-- .element: class="fragment" -->
+- [1 week take-home finalising project/analysis & presentation.]
+<!-- .element: class="fragment" -->
+
+-v-
+# Assessment:
+- 0.5% for attendance at each session (total: 10%)
+<!-- .element: class="fragment" -->
+- 45% from small projects (7.5% each)
+<!-- .element: class="fragment" -->
+- 35% from a focussed final project
+<!-- .element: class="fragment" -->
+
+---
+# Topics
+- Stars (Gaia)
+<!-- .element: class="fragment" -->
+- Transiting Planets
+<!-- .element: class="fragment" -->
+- Radial Velocities
+<!-- .element: class="fragment" -->
+- Interior structures
+<!-- .element: class="fragment" -->
+- Exoplanetary Imaging
+<!-- .element: class="fragment" -->
+- JWST atmospheric spectroscopy
+<!-- .element: class="fragment" -->
+
+-v-
+
+### Links to Bern
+<div class="fragment" markdown="1">
+
+- CHEOPS instrument team (transit photometry)
+
+</div>
+<div class="fragment" markdown="1">
+
+- Yann Alibert & Christoph Mordasini - Interior structure modelling
+
+</div>
+<div class="fragment" markdown="1">
+
+- Jonas Kuhn - Imaging & instrumentation (e.g. PLACID)
+
+</div>
+<div class="fragment" markdown="1">
+
+- Brice Demory & Daniel Kitzmann - atmospheric spectroscopy
+
+</div>
+<div class="fragment" markdown="1">
+
+For masters projects, hopefully this is a useful start!
+
+</div>
+-v-
+
+# Final project
+Take a deep-dive into astronomical data, and write-up a ~10 page report (due late January 2027).
+
+NB - There is *no exam*
+<!-- .element: class="fragment" -->
+
+---
+
+# Questions?
+
+Feel free to reach out:
+- via email (`hugh.osborn@unibe.ch`)
+- at my office (G6 EG.018).
+                    </textarea>
+                </section>
+            </div>
+        </div>
+        <script src="../mkslides-assets/reveal-js/dist/reveal.js"></script>
+        <script src="../mkslides-assets/reveal-js/dist/plugin/highlight.js"></script>
+        <script src="../mkslides-assets/reveal-js/dist/plugin/markdown.js"></script>
+        <script src="../mkslides-assets/reveal-js/dist/plugin/math.js"></script>
+        <script src="../mkslides-assets/reveal-js/dist/plugin/notes.js"></script>
+        <script src="../mkslides-assets/reveal-js/dist/plugin/search.js"></script>
+        <script src="../mkslides-assets/reveal-js/dist/plugin/zoom.js"></script>
+
+        
+            
+                
+                    
+                        <script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js"></script>
+                    
+                
+            
+                
+                    
+                        <script src="https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js"></script>
+                    
+                
+            
+        
+
+        <script>
+            Reveal.initialize({
+                
+                    
+                        history: true,
+                    
+                        slideNumber: "c/t",
+                    
+                        height: 1080,
+                    
+                        width: 1920,
+                    
+                        transition: "fade",
+                    
+                        pdfSeparateFragments: false,
+                    
+                
+                plugins: [
+                    RevealMarkdown, // Must come before the other plugins so they can hook into the generated HTML.
+                    RevealHighlight,
+                    RevealMath.KaTeX,
+                    RevealNotes,
+                    RevealSearch,
+                    RevealZoom,
+
+                    
+                        
+                            
+                                RevealMermaid,
+                            
+                        
+                            
+                        
+                    
+                ],
+            });
+        </script>
+    </body>
+</html>
