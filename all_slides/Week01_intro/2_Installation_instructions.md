@@ -97,7 +97,7 @@ You can interact with it **in the terminal** (i.e. unix terminal, or in e.g. `ze
 
 In a terminal, navigate to where you want to download the package and run:
 
-`git clone http://github.com/hposborn/DataAnalysisForExoplanets`
+`git clone http://github.com/hposborn/DataAnalysisExoplanets`
 
 _(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_[+]
 
