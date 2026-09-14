@@ -12,7 +12,9 @@ We must learn about them **using their light alone**.[+]
 
 <img src="../slide_data/slide_images/TESS_vs_ALMA.png" class="r-stretch" />
 
--v-
+---
+
+# Q: What can we measure about a star?
 
 ## Brightness & colour
 

@@ -28,6 +28,15 @@ Most interesting recent example, **HD110067**, a resonant chain of 6 planets whi
 -v-
 <img src="../slide_data/slide_images/hd110067_data.png" class="r-stretch" />
 
+
+---
+## Introducing you!
+
+##### Tell us:
+- Name
+- Rough experience level at coding
+- What's your favourite planet (and why)?
+
 ---
 # We learn by _doing_.
 - I will usually provide one bare-bones examples which require _thinking_ to complete a simplified version.[+]
@@ -60,21 +69,29 @@ Most interesting recent example, **HD110067**, a resonant chain of 6 planets whi
 
 -v-
 
-### LLM ethics
+## LLM/AI ethics
 
 - Generative AI is the most useful coding support
-- Use it for technical support (why is my code crashing) is fine
-- Using it to replace understanding (build me an interior structure EoS) is **not fine**
-- You will have to demonstrate understanding in presentation questions.
+- Use it for technical support (_Why is my code crashing?_)[+]
+- Do not use it to **replace understanding** (_Build me an interior structure EoS_)[+]
+- You will have to demonstrate understanding in presentation questions.[+]
+
+-v-
+
+## Peer support
+
+- Is welcome. Please help out others!
+- But project/presentations should be **individudal**[+]
 
 ---
 # Topics
-- Stars (Gaia)[+]
-- Transiting Planets[+]
-- Radial Velocities[+]
-- Interior structures[+]
-- Exoplanetary Imaging[+]
-- JWST atmospheric spectroscopy[+]
+wk 1) Intro (installation, stats/coding refresher)[+]
+2+3) Stars (Gaia)[+]
+4+5) Transiting Planets[+]
+6+7) Radial Velocities[+]
+8+9) Interior structures[+]
+10+11) Exoplanetary Imaging[+]
+12+13) JWST atmospheric spectroscopy[+]
 
 -v-
 

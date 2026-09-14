@@ -2,48 +2,11 @@
 title: Installing the necessary code & packages
 ---
 
-# Git
+# Computer
 
-Git is version control system. It allows you to track changes in your files.
+Hopefully you have one with you, and some experience using a UNIX-based command shell and python.[+]
 
-_NB: *Git* is different from *GitHub* which is simply a respository to store version controlled code online_ [+]
-
-You can interact with it **in the terminal** (i.e. unix terminal, or in e.g. `zed`/`vsc`)[+]
-
--v-
-
-## Downloading & syncing this courses package
-
-In a terminal, navigate to where you want to download the package and run:
-
-`git clone http://github.com/hposborn/DataAnalysisForExoplanets`
-
-_(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_[+]
-
--v-
-
-## Making (and saving) your local changes
-
-You will be modifying the python files provided here. In order to save these files, it is best to frequently **commit** your changes. However, you don't want to overwrite what everyone else is looking at, so you should create a **branch**.
-
-### Creating a branch:
-`git checkout -b my-changes`
-This swaps from the `main` branch to your own personal branch
-
-### Commiting changes
-Now you can commit the code (and add comments):
-`git commit -am "Finished Gaia/Stars project"`
-
--v-
-
-### Updating the main branch
-Every week, to ensure changes I may appear in your project folder, you need to `pull` the `main` branch. This requires:
-1) Ensure your personal branch is commited using `git commit`[+]
-2) Swapping back onto the main branch using `git checkout main`[+]
-3) Pulling the new main code using `git pull`[+]
-4) Then go back into your personal branch (`git checkout my-changes`)[+]
-5) Merge the local branch with the main using `git merge main` [+]
-6) Resolve conflicts (e.g. using Zed _Conflict Resolution_ view) [+]
+Linux/Mac work best; Windows should be OK but I have limited technical knowledge running code on it[+]
 
 ---
 
@@ -93,16 +56,15 @@ But first let's set up the environment with `uv`...
 
 `uv sync`
 
-Make sure to run this every new project (as I may add additional packages here)
+Make sure to run this each week (as additional packages may be added here)
 
 This environment can then be activated using `source .venv/bin/activate`
 
 ### Installing packages
 
-You can then use `uv add` to add python modules.
+You can also use `uv add` to add python modules locally.
 
 -v-
-
 
 ## To create a new python environment
 
@@ -118,6 +80,52 @@ You can also directly run python scripts without launching the environment via `
 
 You may need to run `python -m ipykernel install --user` to ensure the repl functionality works.
 
+
+---
+
+# Git
+
+Git is version control system. It allows you to track changes in your files.
+
+_NB: *Git* is different from *GitHub* which is simply a respository to store version controlled code online_ [+]
+
+You can interact with it **in the terminal** (i.e. unix terminal, or in e.g. `zed`/`vsc`)[+]
+
+-v-
+
+## Downloading & syncing this courses package
+
+In a terminal, navigate to where you want to download the package and run:
+
+`git clone http://github.com/hposborn/DataAnalysisForExoplanets`
+
+_(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_[+]
+
+-v-
+
+## Making (and saving) your local changes
+
+You will be modifying the python files provided here. In order to save these files, it is best to frequently **commit** your changes. However, you don't want to overwrite what everyone else is looking at, so you should create a **branch**.
+
+### Creating a branch:
+`git checkout -b my-changes`
+This swaps from the `main` branch to your own personal branch
+
+### Commiting changes
+Now you can commit the code (and add comments):
+`git commit -am "Finished Gaia/Stars project"`
+
+-v-
+
+### Updating the main branch
+Every week, to ensure changes I may appear in your project folder, you need to `pull` the `main` branch. This requires:
+1) Ensure your personal branch is commited using `git commit`[+]
+2) Swapping back onto the main branch using `git checkout main`[+]
+3) Pulling the new main code using `git pull`[+]
+4) Then go back into your personal branch (`git checkout my-changes`)[+]
+5) Merge the local branch with the main using `git merge main` [+]
+6) Resolve conflicts (e.g. using Zed _Conflict Resolution_ view) [+]
+
 ---
 
 # Python installation issues?
@@ -125,7 +133,7 @@ You may need to run `python -m ipykernel install --user` to ensure the repl func
 ### For Mac
 - You will likely need to download XCode (10+Gb)
 
-### For linux
+### For Linux
 - Should be native...
 
 ### For windows
@@ -135,11 +143,13 @@ You may need to run `python -m ipykernel install --user` to ensure the repl func
 
 # Viewing the slides
 
-To "build" the slides:
+Go to "[https://hposborn.github.io/DataAnalysisExoplanets/](https://hposborn.github.io/DataAnalysisExoplanets/)"
+
+-v-
+
+To "build" the slides locally (mostly a reminder to me):
 1) Make sure to have the most up-to-date version using `git pull`
 2) Build the slides with `mkslides build all_slides/`
 3) Set-up the interactive slide back-end `mkslides serve all_slides/`
 4) Open `http://localhost:8000` in a browser
 5) View the slides in HTML, or download as PDF.
-
-I also plan to make these available directly online (Likely on http://hughosborn.co.uk - TBD)

@@ -47,7 +47,7 @@ We will use some data from the NASA exoplanet archive for this.
 
 <div class="fragment" markdown="1">
 
-Please check out `all_code/coding_referesher_example.py`
+Please open `all_code/coding_referesher_example.py` in Zed
 
 </div>
 -v-
@@ -112,11 +112,11 @@ Please check out `all_code/coding_referesher_example.py`
 </div>
 <div class="fragment" markdown="1">
 
-- Prefer standard tabular formats (`astropy.table.Table` or `pandas.DataFrame`)
+- Prefer standard tabular formats (`astropy.table` / `pandas.DataFrame`)
 
 </div>
 -v-
-## Querying Transit Planet Population
+## Querying Transit Planet Population - SQL direct
 ```python
 from astroquery.ipac.nexsci.nasaexoplanetarchive import NasaExoplanetArchive
 
@@ -132,9 +132,22 @@ WHERE default_flag = 1
 data = NasaExoplanetArchive.query_criteria(select=query)
 ```
 
+-v-
+## Querying Transit Planet Population - Function
+
+```
+from astroquery.ipac.nexsci.nasaexoplanetarchive import NasaExoplanetArchive
+
+cols="pl_name,pl_rade,pl_radeerr1,pl_bmasse,pl_bmasseerr1,pl_eqt,sy_vmag,sy_gaiamag,st_mass,st_teff,st_rad"
+
+wh="default_flag=1 AND tran_flag=1 AND pl_rade IS NOT NULL AND pl_rade > 0 AND pl_bmasse IS NOT NULL AND pl_bmasse > 0 AND pl_bmasseerr1 IS NOT NULL AND pl_bmasseerr1 > 0 AND pl_radeerr1 IS NOT NULL"
+
+table = NasaExoplanetArchive.query_criteria(table="ps", where=wh, select=cols)
+```
+
 ---
 
-# 2. Visualisation Best Practices
+# 2. Visualisations
 ## What Makes a Great Publication Plot?
 <div class="fragment" markdown="1">
 
@@ -157,7 +170,7 @@ data = NasaExoplanetArchive.query_criteria(select=query)
 
 </div>
 -v-
-## An example - the planetary population in multiple dimensions
+## Your turn - the planetary population in multiple dimensions
 - Using matplotlib, 
 <div class="fragment" markdown="1">
 
@@ -181,16 +194,18 @@ data = NasaExoplanetArchive.query_criteria(select=query)
 </div>
 <div class="fragment" markdown="1">
 
-- + try other parameters (e.g. period, temperature, stellar radius, etc)
+- Try other parameters (e.g. period, temperature, stellar radius, etc)
 
 </div>
 <div class="fragment" markdown="1">
 
-- + Try other plot types, e.g. a 2D kernel density estimation (KDE) with `seaborn`
+- Try other plot types, e.g. a 2D kernel density estimation (KDE) with `seaborn`
 
 </div>
 -v-
-'''scatter = ax.scatter(df['pl_bmasse'],df['pl_rade'],
+
+```
+scatter = ax.scatter(df['pl_bmasse'],df['pl_rade'],
             c=np.log10(df['pl_eqt']),
             s=(15 - df['sy_vmag'].clip(upper=15)) * 15 + 20, cmap='viridis', alpha=0.8, edgecolors='k',linewidth=0.5
         )
@@ -200,7 +215,8 @@ ax.set_xlabel(r'Mass $M_{\text{Earth}}$ [$M_\text{Earth}$]')
 ax.set_ylabel(r'Planetary Radius $R_\oplus$ [$R_\text{Earth}$]')
 ax.set_title('Sub-Neptune Population Overview')
 ax.grid(True, linestyle='--', alpha=0.5)
-plt.show()'''
+plt.show()
+```
 
 ---
 
@@ -222,7 +238,7 @@ plt.show()'''
 
 </div>
 -v-
-### Building a parametric model in python
+### Your turn: Building a parametric model in python
 <div class="fragment" markdown="1">
 
 - Create functions that, given a radius and a list of parameters (the polynomial coefficients) produces an expected mass.
@@ -239,7 +255,8 @@ plt.show()'''
 
 </div>
 -v-
-'''def linear_model(theta, x):
+```
+def linear_model(theta, x):
     # Define a linear model from parameter array theta
     a, b = theta
     return a * x + b
@@ -247,7 +264,7 @@ def quadratic_model(theta, x):
     # Define a quadratic model from parameter array theta
     a, b, c = theta
     return a * x**2 + b * x + c
-'''
+```
 
 ---
 
@@ -260,27 +277,37 @@ def quadratic_model(theta, x):
 </div>
 <div class="fragment" markdown="1">
 
-- The probability distribution for a datapoint, $y_i$, normally distributed from some model value $f(x)$, is $P(y_i | f) = \frac{\exp{-(y_i-f(x_i)^2/2\sigma_i^2)}}{\sqrt{2\pi}\sigma_i}$
+- The probability distribution for a datapoint, $y_i$, normally distributed from some model value $f(x)$, is $P(y_i | f) = \frac{\exp(-(y_i-f(x_i))^2/2\sigma_i^2))}{\sqrt{2\pi}\sigma_i}$
 
 </div>
+<div class="fragment" markdown="1">
+
 - The "likelihood" is the probability of obtaining your data $y$ given the model $f$ and the fixed observed values of $x_i$ and $\sigma_i$ $\mathcal{L} = P({y}^N_{i=1} | f, I) = \prod_{i=1}^N P(y_i | f) $
+
+</div>
+<div class="fragment" markdown="1">
+
 - The "log likelihood" remove the exponential term giving: $\ln \mathcal{L} = K - \sum_{i=1}^N\frac{(y_i-f(x_i))^2}{2\sigma_{yi}^2} = K - \frac{1}{2}\chi^2 $
 
+</div>
 -v-
 
-### Building a parametric model in python
+### Your turn: Assessing log likelihood
 <div class="fragment" markdown="1">
 
 - Create a function which can compute the log likelihood for your example function
 
 </div>
 -v-
-'''def log_likelihood(theta, x, y, yerr, model=linear_model, **kwargs):
-    """Gaussian log likelihood."""
+```
+def log_likelihood(theta, x, y, yerr, model=linear_model, **kwargs):
+    """
+    Gaussian log likelihood.
+    """
     ymodel = model(theta, x)
     log_lik = -0.5 * np.sum(((y - ymodel) / yerr)**2 + np.log(2 * np.pi * yerr**2))
     return log_lik
-'''
+```
 -v-
 
 ## Optimization: Gradient Descent vs. Direct Search
@@ -310,13 +337,21 @@ def quadratic_model(theta, x):
 - **$\chi^2$ Minimization:** $\chi^2 = \sum \frac{(y_i - f(x_i, \theta))^2}{\sigma_i^2}$
 
 </div>
-  - For well-behaved gaussian distributions, maximising log likelihood is equivalent to minimising $\chi^2$.
+<div class="fragment" markdown="1">
+
+- For well-behaved gaussian distributions, maximising log likelihood is equivalent to minimising $\chi^2$.
+
+</div>
 <div class="fragment" markdown="1">
 
 - **Reduced $\chi^2$ ($\chi^2_\nu$):** $\chi^2 / (N - k)$
 
 </div>
-- **Bayesian Information Criterion (BIC):** 
+<div class="fragment" markdown="1">
+
+- **Bayesian Information Criterion (BIC):**
+
+</div>
 <div class="fragment" markdown="1">
 
 $$\text{BIC} = k \ln(N) - 2 \ln(\widehat{L}) \approx \chi^2 + k \ln(N)$$
@@ -329,17 +364,17 @@ $$\text{BIC} = k \ln(N) - 2 \ln(\widehat{L}) \approx \chi^2 + k \ln(N)$$
 </div>
 -v-
 
-#### Updating your example 
+#### Your turn: model comparison 
 
 - Compute the BIC for the two models (linear and quadratic)
 - Which model is preferred?
  
 -v-
 
-'''
+```
 def BIC(loglik,n_params,nsamps):
     return 2 * loglik + n_params * np.log(nsamps)
-'''
+```
 
 ---
 
@@ -349,7 +384,11 @@ def BIC(loglik,n_params,nsamps):
 - We usually have information about our parameters - **priors**
 
 </div>
-  - This could be from past observations or theoretical considerations
+<div class="fragment" markdown="1">
+
+- This could be from past observations or theoretical considerations
+
+</div>
 -v-
 <div class="fragment" markdown="1">
 
@@ -368,12 +407,7 @@ def BIC(loglik,n_params,nsamps):
 </div>
 <div class="fragment" markdown="1">
 
-- $P({y}^N_{i=1} | I)$ - the probability of datapoints given their position and error
-
-</div>
-<div class="fragment" markdown="1">
-
--  Typically this constant and can be ignored.
+- $P({y}^N_{i=1} | I)$ - the probability of datapoints given their position and error (Typically this constant and can be ignored.)
 
 </div>
 -v-
@@ -402,7 +436,7 @@ def BIC(loglik,n_params,nsamps):
 </div>
 -v-
 
-#### Updating your example 
+#### Your turn: Adding a prior function
 
 <div class="fragment" markdown="1">
 
@@ -416,7 +450,8 @@ def BIC(loglik,n_params,nsamps):
 </div>
 -v-
 
-'''def log_prior_linear(theta):
+```
+def log_prior_linear(theta):
     """
     Calculates log prior using a combination of:
     1. Uniform prior on slope 'a' (must be physical: 0 < a < 5)
@@ -432,11 +467,12 @@ def BIC(loglik,n_params,nsamps):
     mu_b, sigma_b = 0.5, 5.0
     log_prior_b = -0.5 * ((b - mu_b) / sigma_b)**2 - np.log(sigma_b * np.sqrt(2 * np.pi))
     
-    return log_prior_b'''
+    return log_prior_b
+```
   
 ---
 
-# 6. Bayesian MCMC & Sampling
+# 6. MCMC & Sampling
 ## Posterior Exploration
 <div class="fragment" markdown="1">
 
@@ -460,7 +496,7 @@ def BIC(loglik,n_params,nsamps):
 </div>
 -v-
 
-#### Updating your example 
+#### Your turn: running emcee
 
 <div class="fragment" markdown="1">
 
@@ -491,11 +527,7 @@ $$\mathcal{Z} = \int P(D|\theta) P(\theta) d\theta$$
 </div>
 -v-
 
-<div class="fragment" markdown="1">
-
-- **Advanced Samplers:**
-
-</div>
+**Advanced Samplers:**
 <div class="fragment" markdown="1">
 
 - **HMC / NUTS (`PyMC`):** Uses gradient physics to navigate high-dimensional spaces ([e.g.](https://chi-feng.github.io/mcmc-demo/app.html?algorithm=EfficientNUTS&target=banana))
