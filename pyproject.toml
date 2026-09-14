@@ -14,6 +14,7 @@ dependencies = [
     "mkslides>=2.0.0",
     "numpy>=2.5.1",
     "pandas>=3.0.3",
+    "scikit-learn>=1.9.1",
     "scipy>=1.18.0",
     "seaborn>=0.13.2",
     "tqdm>=4.70.1",
