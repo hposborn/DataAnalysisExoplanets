@@ -8,7 +8,7 @@ Git is version control system. It allows you to track changes in your files.
 
 _NB: *Git* is different from *GitHub* which is simply a respository to store version controlled code online_ [+]
 
-You can interact with it **in the terminal** (i.e. unix terminal, or in e.g. `zed`/`vsc`)
+You can interact with it **in the terminal** (i.e. unix terminal, or in e.g. `zed`/`vsc`)[+]
 
 -v-
 
@@ -18,15 +18,13 @@ In a terminal, navigate to where you want to download the package and run:
 
 `git clone http://github.com/hposborn/DataAnalysisForExoplanets`
 
-_(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_
-<!-- .element: class="fragment" -->
+_(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_[+]
 
 -v-
 
-
 ## Making (and saving) your local changes
 
-You will be modifying and playing with the python files provided here. In order to save these files, it is best to frequently **commit** your changes. However, you don't want to overwrite what everyone else is looking at, so you should create a **branch**.
+You will be modifying the python files provided here. In order to save these files, it is best to frequently **commit** your changes. However, you don't want to overwrite what everyone else is looking at, so you should create a **branch**.
 
 ### Creating a branch:
 `git checkout -b my-changes`
@@ -40,18 +38,12 @@ Now you can commit the code (and add comments):
 
 ### Updating the main branch
 Every week, to ensure changes I may appear in your project folder, you need to `pull` the `main` branch. This requires:
-1) Ensure your personal branch is commited using `git commit`
-<!-- .element: class="fragment" -->
-2) Swapping back onto the main branch using `git checkout main`
-<!-- .element: class="fragment" -->
-3) Pulling the new main code using `git pull`
-<!-- .element: class="fragment" -->
-4) Then go back into your personal branch (`git checkout my-changes`)
-<!-- .element: class="fragment" -->
-5) Merge the local branch with the main using `git merge main` 
-<!-- .element: class="fragment" -->
-6) Resolve conflicts (e.g. using VSC _Source Control_ tab) 
-<!-- .element: class="fragment" -->
+1) Ensure your personal branch is commited using `git commit`[+]
+2) Swapping back onto the main branch using `git checkout main`[+]
+3) Pulling the new main code using `git pull`[+]
+4) Then go back into your personal branch (`git checkout my-changes`)[+]
+5) Merge the local branch with the main using `git merge main` [+]
+6) Resolve conflicts (e.g. using Zed _Conflict Resolution_ view) [+]
 
 ---
 
@@ -59,22 +51,19 @@ Every week, to ensure changes I may appear in your project folder, you need to `
 
 This is a much quicker development environment (thanks to its Rust back-end) which does not cook your laptop (unlike VS Code).
 
-Download at https://zed.dev/download; or on Mac, you can use `brew install zed`.
+Download at https://zed.dev/download; or on Mac, you can use `brew install zed`.[+]
 
 -v-
 
 We will use REPL (read-evalutate-print-loop; see https://zed.dev/docs/repl)
 
-Allows .py files to be "inspected" like notebooks using the `# %%` command.
+Allows .py files to be "inspected" like notebooks using the `# %%` command.[+]
 
-The command `# %%` is used to separate cells.
-<!-- .element: class="fragment" -->
+The command `# %%` is used to separate cells.[+]
 
-Outputs (e.g. plots) can be displayed just like a notebooks with VS Code.
-<!-- .element: class="fragment" -->
+Outputs (e.g. plots) can be displayed just like a notebooks with VS Code.[+]
 
-To run each cell in Zed press Shift + Control + Enter.
-<!-- .element: class="fragment" -->
+To run each cell in Zed press Shift + Control + Enter.[+]
 -v-
 
 
@@ -152,3 +141,5 @@ To "build" the slides:
 3) Set-up the interactive slide back-end `mkslides serve all_slides/`
 4) Open `http://localhost:8000` in a browser
 5) View the slides in HTML, or download as PDF.
+
+I also plan to make these available directly online (Likely on http://hughosborn.co.uk - TBD)

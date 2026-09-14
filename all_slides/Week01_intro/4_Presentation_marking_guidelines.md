@@ -26,14 +26,14 @@ Assume you are presenting to a Masters-level peer _not in this course_.
 ### 3) Results
 - What did you find?
 - Show the data & the best-fit model
-- Show the parameters you derived
+- Show the parameters you derived (and their uncertainties)
 - How well does the model fit (e.g. compared to null hypothesis)?
 
 -v-
 
 ### 4) Interpretation \& Conclusion
 - What do those results actually mean?
-- How do they compare to other results
+- How do they compare to other results?
 - Zoom out to the bigger picture (e.g. from planet to system, from your analysis to past/future analyses or observations)
 
 ---
@@ -82,7 +82,7 @@ Roughly follow this [MIT guide for technical presentations](https://web.mit.edu/
 - **Intended audience** - correct level
 - **Evidence** behind all interpreations/conclusions/arguments
 - **Delivery** - should make sense without slides
-- **Visulations** clear & appealing
+- **Visulations** - clear & appealing
 - **Q & A** responses show deeper understanding
 
 <!-- |  | Delivery | Visulations | Results | Q & A | 

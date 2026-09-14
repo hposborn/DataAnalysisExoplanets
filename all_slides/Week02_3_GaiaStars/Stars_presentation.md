@@ -10,17 +10,21 @@ We must learn about them **using their light alone**.[+]
 
 -v-
 
+<img src="../slide_data/slide_images/TESS_vs_ALMA.png" class="r-stretch" />
+
+-v-
+
 ## Brightness & colour
 
 Survey telescopes can measure the apparent brightness of all stars in the sky.[+]
 
-<span frame="fragment">Typically we use a log relative magnitude scale defined by the star _Vega_ ($m_{\rm Vega}=0.0$).</span>[+]
+Typically we use a log relative magnitude scale defined by the star _Vega_ ($m_{\rm Vega}=0.0$).[+]
 
 Faint stars have higher magnitudes (e.g. $m_{{\rm proxima, V}} = 11.13$)[+]
 
 Measurements in different filters (e.g. B & V) produce colours[+]
 
-<span frame="fragment">e.g. $ \left( B - V \right) \_{\rm Vega} = 0.0 $ ; $ \left(\rm{B}-\rm{V}\right) \ _{\rm Proxima}=1.82 $[+]</span>
+e.g. $ \left( B - V \right) \_{\rm Vega} = 0.0 $ ; $ \left(\rm{B}-\rm{V}\right) \ _{\rm Proxima}=1.82 $[+]
 
 -v-
 
@@ -273,11 +277,7 @@ Open question - *Can you estimate the age of clusters from the MS turn-off*?
 
 -v-
 
-6) Can we find the most luminous stars? What are their radii?
-
--v-
-
-7) Can we find the fastest-velocity stars?
+5) Can we find the fastest-velocity stars?
 
 - Calculate true velocity from projected/angular velocity and query Gaia
 
@@ -287,14 +287,12 @@ What is the cause of their high speed?
 
 #### Useful information:
 - Always check with a small sample first, and potentially select columns you want (quicker)
+- Queries to the `dr3_lite` catalogue (limited number of columns) are much quicker
 - [Astroquery Gaia module](https://astroquery.readthedocs.io/en/latest/gaia/gaia.html)
 - [Gaia archive](https://gea.esac.esa.int/archive/)
+-v-
+#### Useful information (cont.):
 - Fundamental parameters of [the main sequence](https://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt)
 - Gaia [DR3 column descriptions](https://irsa.ipac.caltech.edu/data/Gaia/dr3/gaia_dr3_source_colDescriptions.html)
 - Good quality flags for single stars: `parallax_over_error > 10`, `rv_nb_transits > 10`, `ruwe<1.4`, `duplicated_source = “FALSE”`, `non_single_star=0`.
 - [Sub-giant selection](https://iopscience.iop.org/article/10.3847/1538-4357/ad7c4e).
-
--v-
-
-#### Useful information:
--
