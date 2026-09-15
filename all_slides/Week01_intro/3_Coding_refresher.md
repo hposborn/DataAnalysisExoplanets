@@ -119,6 +119,30 @@ def quadratic_model(theta, x):
 
 ---
 
+# Aside - the Normal distribution
+
+## Observational Errors to the Gaussian Distribution
+- **Abraham de Moivre (1733):** First derived the bell curve as a limit of binomial distributions [+]
+- **The Astronomy Problem (1800s):** How do you combine noisy, discordant telescope measurements? [+]
+- **Carl Friedrich Gauss (1809):** Showed that assuming the **arithmetic mean** is optimal *forces* observational errors to follow a specific probability density:
+  $$P(\epsilon) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{\epsilon^2}{2\sigma^2}\right)$$ [+]
+- Justified the **Method of Least Squares** on probabilistic grounds [+]
+
+---
+
+# Orbit Determination in the 19th Century
+## Ceres, Neptune, and the Power of Least Squares
+- **The Rediscovery of Ceres (1801):**
+  - Giuseppe Piazzi lost track of dwarf planet Ceres after only 40 days of observations [+]
+  - Gauss used least-squares & normal error assumptions to predict where it would reappear [+]
+  - Astronomers found Ceres exactly where Gauss pointed his model! [+]
+- **The Discovery of Neptune (1846):**
+  - Anomalies in Uranus's orbit pointed to an unseen 8th planet [+]
+  - Urbain Le Verrier used orbital mechanics & observational error modeling to calculate its position [+]
+  - Galle observed Neptune on the first night of searching—a triumph of celestial mechanics & data fitting [+]
+
+---
+
 # 4. Model optimisation
 
 - We want to find the parameters which best fit the data [+]
@@ -130,6 +154,7 @@ def quadratic_model(theta, x):
 
 ### Your turn: Assessing log likelihood
 - Create a function which can compute the log likelihood for your example function [+]
+
 -v-
 ```
 def log_likelihood(theta, x, y, yerr, model=linear_model, **kwargs):
@@ -161,6 +186,12 @@ def log_likelihood(theta, x, y, yerr, model=linear_model, **kwargs):
 
 -v-
 
+#### The importance of model comparison
+
+<img src="../slide_data/slide_images/k2_18b_dms.jpg"  height="750">
+
+-v-
+
 #### Your turn: model comparison 
 
 - Compute the BIC for the two models (linear and quadratic)
@@ -172,6 +203,8 @@ def log_likelihood(theta, x, y, yerr, model=linear_model, **kwargs):
 def BIC(loglik,n_params,nsamps):
     return 2 * loglik + n_params * np.log(nsamps)
 ```
+---
+
 
 ---
 

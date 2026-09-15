@@ -46,7 +46,7 @@ Two stars could appear the same brightness but be orders of magnitude apart in l
 
 ## Distance
 
-<img src="../slide_data/slide_images/archery-target-concentric-rings-scoring-precision-accuracy-sports-chart_1229877-1927-2098748862.jpg" class="r-stretch" />
+<img src="../slide_data/slide_images/archery-target-concentric-rings.jpg" class="r-stretch" />
 
 Close one eye; hold out thumb and place over target; switch eyes: **parallax** [+]
 

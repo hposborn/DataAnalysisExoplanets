@@ -99,7 +99,7 @@ In a terminal, navigate to where you want to download the package and run:
 
 `git clone http://github.com/hposborn/DataAnalysisExoplanets`
 
-_(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_[+]
+_(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_ [+]
 
 -v-
 
