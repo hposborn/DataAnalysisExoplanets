@@ -200,7 +200,7 @@ li {
 }
 
 .reveal {
-  font-size: 26px; /* Default is usually around 38px. Lowering this shrinks ALL em-based text uniformly! */
+  font-size: 19px; /* Default is usually around 38px. Lowering this shrinks ALL em-based text uniformly! */
 }
 
 /* Optional: Ensure any paragraphs or inline math inside the box also inherit or use dark blue */

@@ -82,8 +82,8 @@ slides:
 # Options to be passed to reveal.js: options in yaml format, they will be
 # translated to JSON automatically (see https://revealjs.com/config/)
 revealjs:
-    height: 700
-    width: 960
+    height: 560
+    width: 768
     transition: fade
     pdfSeparateFragments: false
     #example_plugin:
