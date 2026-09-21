@@ -16,7 +16,9 @@ We must learn about them **using their light alone**.[+]
 
 # Q: What can we measure about a star?
 
-## Brightness & colour
+-v-
+
+## Brightness
 
 Survey telescopes can measure the apparent brightness of all stars in the sky.[+]
 
@@ -24,13 +26,17 @@ Typically we use a log relative magnitude scale defined by the star _Vega_ ($m_{
 
 Faint stars have higher magnitudes (e.g. $m_{{\rm proxima, V}} = 11.13$)[+]
 
+-v-
+
+## Colours 
+
 Measurements in different filters (e.g. B & V) produce colours[+]
 
 e.g. $ \left( B - V \right) \_{\rm Vega} = 0.0 $ ; $ \left(\rm{B}-\rm{V}\right) \ _{\rm Proxima}=1.82 $[+]
 
 -v-
 
-## Brightness & colour
+## Magnitudes
 
 The apparent magnitude of a given stars is determined by :
 
@@ -42,6 +48,13 @@ The apparent magnitude of a given stars is determined by :
 
 Two stars could appear the same brightness but be orders of magnitude apart in luminosity & distance.[+]
 
+-v-
+
+#### Colour - reddening
+
+<img src="../slide_data/slide_images/reddening.jpg" class="r-stretch" />
+
+- The colour we observe may not always match the _intrinsic_ colour. [+]
 ---
 
 ## Distance
@@ -58,15 +71,11 @@ Parallax is defined as the observed angular displaced of a star from the 1AU dis
 
 If we measure some displacement angle $\pi$ relative to (more or less fixed) background stars, then what is the distance to the star?[+]
 
-$$
-\tan{\pi} = 1{\rm au}/d
-$$[+]
+$\tan{\pi} = 1{\rm au}/d$[+]
 
 Given that angles are small ($\tan{\theta} \approx \theta$ in radians) and the parsec is defined as the distance which causes a 1 arcsec displacement:[+]
 
-$$
-\pi/\rm{arcsec} = \rm{pc}/d
-$$[+]
+$ \pi/\rm{arcsec} = \rm{pc}/d $[+]
 
 [q] What is the parallax of a star at the galactic core (8000 pc)? [+]
 
@@ -91,6 +100,7 @@ Stellar colours are most fundamentally related to stellar surface (or _effective
 -v-
 
 ## Luminosity
+<img src="../slide_data/slide_images/GaiaDR3-radial_velocity.jpg" class="r-stretch">
 
 If a star has distance $d$ and magnitude $m_V$, we can estimate its luminosity.
 
@@ -210,6 +220,18 @@ For a stellar population of the same age the impact of stellar evolution is clea
 
 -v-
 
+<img src="../slide_data/slide_images/Gaia_Exploring_the_multi-dimensional_Milky_Way.jpg" class="r-stretch">
+
+-v-
+
+### RVs
+<img src="../slide_data/slide_images/GaiaDR3-radial_velocity.jpg" class="r-stretch">
+
+-v-
+
+[3D map of milky way structures](https://faun.rc.fas.harvard.edu/czucker/Paper_Figures/Milky_Way_Mapping_Lorentz.html)
+-v-
+
 #### Gaia - How?
 
 <img src="../slide_data/slide_images/Gaia_bp_rp_map.png"  class="r-stretch">
@@ -224,10 +246,11 @@ For a stellar population of the same age the impact of stellar evolution is clea
 
 What we want to learn:
 
-- Querying databased with astroquery
+- Querying databased with astroquery (NB - it can be slow).
 - Using astronomical software like astropy
 - Manipulating large databases and extracting useful information
 - Plotting/visualising data
+- Reearching & comparing to some real-world research
 
 -v-
 
@@ -237,9 +260,9 @@ What we want to learn:
 
 # Some Ideas
 
-The first two are detailed in `all_code/Week2_3_GaiaStars/Inspect_gaia_example.py`
+First steps are detailed in `all_code/Week2_3_GaiaStars/Inspect_gaia_example.py`
 
-The rest are simply examples - pick and choose the most interesting! [+]
+The others are simply examples - pick and choose the most interesting! [+]
 
 \+ Your own ideas are more than welcome [+]
 
@@ -282,8 +305,7 @@ Open question - *Can you estimate the age of clusters from the MS turn-off*?
 5) Can we find the fastest-velocity stars?
 
 - Calculate true velocity from projected/angular velocity and query Gaia
-
-What is the cause of their high speed?
+- What is the cause of their high speed?
 
 -v-
 
@@ -298,3 +320,8 @@ What is the cause of their high speed?
 - Gaia [DR3 column descriptions](https://irsa.ipac.caltech.edu/data/Gaia/dr3/gaia_dr3_source_colDescriptions.html)
 - Good quality flags for single stars: `parallax_over_error > 10`, `rv_nb_transits > 10`, `ruwe<1.4`, `duplicated_source = “FALSE”`, `non_single_star=0`.
 - [Sub-giant selection](https://iopscience.iop.org/article/10.3847/1538-4357/ad7c4e).
+-v-
+#### Avoiding lag:
+- Use the `lite` dr3 source catalogue
+- Select only `TOP N` files (especially to begin with)
+- Specify only certain columns for download

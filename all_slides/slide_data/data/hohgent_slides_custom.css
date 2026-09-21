@@ -40,7 +40,7 @@
 }
 
 body {
-    background: url("https://hogenttin.github.io/cdn/logo/HOGENT.svg");
+    background: url("./unibe_transit_icon2.ico");
     background-size: 3vh;
     background-position: right 2ch bottom 3ch;
     background-repeat: no-repeat;
@@ -199,6 +199,10 @@ li {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
+.reveal {
+  font-size: 26px; /* Default is usually around 38px. Lowering this shrinks ALL em-based text uniformly! */
+}
+
 /* Optional: Ensure any paragraphs or inline math inside the box also inherit or use dark blue */
 .reveal .questionbox p {
     color: #0d3b66;
@@ -264,4 +268,3 @@ div.multicolumn {
     gap: 5vw;
     margin-bottom: var(--content-padding-bottom);
 }
-

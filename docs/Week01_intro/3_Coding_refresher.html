@@ -268,6 +268,68 @@ def quadratic_model(theta, x):
 
 ---
 
+# Aside - the Normal distribution
+
+## Observational Errors to the Gaussian Distribution
+<div class="fragment" markdown="1">
+
+- **Abraham de Moivre (1733):** First derived the bell curve as a limit of binomial distributions
+
+</div>
+<div class="fragment" markdown="1">
+
+- **The Astronomy Problem (1800s):** How do you combine noisy, discordant telescope measurements?
+
+</div>
+- **Carl Friedrich Gauss (1809):** Showed that assuming the **arithmetic mean** is optimal *forces* observational errors to follow a specific probability density:
+<div class="fragment" markdown="1">
+
+$$P(\epsilon) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{\epsilon^2}{2\sigma^2}\right)$$
+
+</div>
+<div class="fragment" markdown="1">
+
+- Justified the **Method of Least Squares** on probabilistic grounds
+
+</div>
+---
+
+# Orbit Determination in the 19th Century
+## Ceres, Neptune, and the Power of Least Squares
+- **The Rediscovery of Ceres (1801):**
+<div class="fragment" markdown="1">
+
+- Giuseppe Piazzi lost track of dwarf planet Ceres after only 40 days of observations
+
+</div>
+<div class="fragment" markdown="1">
+
+- Gauss used least-squares & normal error assumptions to predict where it would reappear
+
+</div>
+<div class="fragment" markdown="1">
+
+- Astronomers found Ceres exactly where Gauss pointed his model!
+
+</div>
+- **The Discovery of Neptune (1846):**
+<div class="fragment" markdown="1">
+
+- Anomalies in Uranus's orbit pointed to an unseen 8th planet
+
+</div>
+<div class="fragment" markdown="1">
+
+- Urbain Le Verrier used orbital mechanics & observational error modeling to calculate its position
+
+</div>
+<div class="fragment" markdown="1">
+
+- Galle observed Neptune on the first night of searching—a triumph of celestial mechanics & data fitting
+
+</div>
+---
+
 # 4. Model optimisation
 
 <div class="fragment" markdown="1">
@@ -364,6 +426,12 @@ $$\text{BIC} = k \ln(N) - 2 \ln(\widehat{L}) \approx \chi^2 + k \ln(N)$$
 </div>
 -v-
 
+#### The importance of model comparison
+
+<img src="../slide_data/slide_images/k2_18b_dms.jpg"  height="750">
+
+-v-
+
 #### Your turn: model comparison 
 
 - Compute the BIC for the two models (linear and quadratic)
@@ -375,6 +443,8 @@ $$\text{BIC} = k \ln(N) - 2 \ln(\widehat{L}) \approx \chi^2 + k \ln(N)$$
 def BIC(loglik,n_params,nsamps):
     return 2 * loglik + n_params * np.log(nsamps)
 ```
+---
+
 
 ---
 
@@ -652,9 +722,9 @@ $$\mathcal{Z} = \int P(D|\theta) P(\theta) d\theta$$
                     
                         slideNumber: "c/t",
                     
-                        height: 1080,
+                        height: 700,
                     
-                        width: 1920,
+                        width: 960,
                     
                         transition: "fade",
                     
