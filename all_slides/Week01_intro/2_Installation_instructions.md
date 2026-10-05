@@ -29,10 +29,13 @@ Outputs (e.g. plots) can be displayed just like a notebooks with VS Code.[+]
 To run each cell in Zed press Shift + Control + Enter.[+]
 -v-
 
+### Open a project in zed
+
+Make sure to open the folder (rather than the .py file) so it can see the uv environment
 
 ### Python kernels
 
-You will need to ensure you are running the correct python environment. On Zed/VSC, this can be modified using the top-right button. 
+You will need to ensure you are running the correct python environment. On Zed/VSC, this can be modified using the top-right "v" menu (you may need to run a cell first, e.g. with CTRL+SHIFT+ENTER on Mac).
 
 But first let's set up the environment with `uv`...
 

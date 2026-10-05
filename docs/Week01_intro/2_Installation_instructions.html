@@ -43,57 +43,38 @@
                     <textarea data-template>
 # Computer
 
-<div class="fragment" markdown="1">
+<span class="fragment">Hopefully you have one with you, and some experience using a UNIX-based command shell and python.</span>
 
-Hopefully you have one with you, and some experience using a UNIX-based command shell and python.
+<span class="fragment">Linux/Mac work best; Windows should be OK but I have limited technical knowledge running code on it</span>
 
-</div>
-<div class="fragment" markdown="1">
-
-Linux/Mac work best; Windows should be OK but I have limited technical knowledge running code on it
-
-</div>
 ---
 
 # Zed
 
 This is a much quicker development environment (thanks to its Rust back-end) which does not cook your laptop (unlike VS Code).
 
-<div class="fragment" markdown="1">
+<span class="fragment">Download at https://zed.dev/download; or on Mac, you can use `brew install zed`.</span>
 
-Download at https://zed.dev/download; or on Mac, you can use `brew install zed`.
-
-</div>
 -v-
 
 We will use REPL (read-evalutate-print-loop; see https://zed.dev/docs/repl)
 
-<div class="fragment" markdown="1">
+<span class="fragment">Allows .py files to be "inspected" like notebooks using the `# %%` command.</span>
 
-Allows .py files to be "inspected" like notebooks using the `# %%` command.
+<span class="fragment">The command `# %%` is used to separate cells.</span>
 
-</div>
-<div class="fragment" markdown="1">
+<span class="fragment">Outputs (e.g. plots) can be displayed just like a notebooks with VS Code.</span>
 
-The command `# %%` is used to separate cells.
-
-</div>
-<div class="fragment" markdown="1">
-
-Outputs (e.g. plots) can be displayed just like a notebooks with VS Code.
-
-</div>
-<div class="fragment" markdown="1">
-
-To run each cell in Zed press Shift + Control + Enter.
-
-</div>
+<span class="fragment">To run each cell in Zed press Shift + Control + Enter.</span>
 -v-
 
+### Open a project in zed
+
+Make sure to open the folder (rather than the .py file) so it can see the uv environment
 
 ### Python kernels
 
-You will need to ensure you are running the correct python environment. On Zed/VSC, this can be modified using the top-right button. 
+You will need to ensure you are running the correct python environment. On Zed/VSC, this can be modified using the top-right "v" menu (you may need to run a cell first, e.g. with CTRL+SHIFT+ENTER on Mac).
 
 But first let's set up the environment with `uv`...
 
@@ -148,16 +129,10 @@ You may need to run `python -m ipykernel install --user` to ensure the repl func
 
 Git is version control system. It allows you to track changes in your files.
 
-<div class="fragment" markdown="1">
+<span class="fragment">_NB: *Git* is different from *GitHub* which is simply a respository to store version controlled code online_</span>
 
-_NB: *Git* is different from *GitHub* which is simply a respository to store version controlled code online_
+<span class="fragment">You can interact with it **in the terminal** (i.e. unix terminal, or in e.g. `zed`/`vsc`)</span>
 
-</div>
-<div class="fragment" markdown="1">
-
-You can interact with it **in the terminal** (i.e. unix terminal, or in e.g. `zed`/`vsc`)
-
-</div>
 -v-
 
 ## Downloading & syncing this courses package
@@ -166,11 +141,8 @@ In a terminal, navigate to where you want to download the package and run:
 
 `git clone http://github.com/hposborn/DataAnalysisExoplanets`
 
-<div class="fragment" markdown="1">
+<span class="fragment">_(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_</span>
 
-_(You may need to install git on your system first with e.g. `apt-get git`, `brew pour git`, etc)_
-
-</div>
 -v-
 
 ## Making (and saving) your local changes
@@ -189,36 +161,13 @@ Now you can commit the code (and add comments):
 
 ### Updating the main branch
 Every week, to ensure changes I may appear in your project folder, you need to `pull` the `main` branch. This requires:
-<div class="fragment" markdown="1">
+<span class="fragment">1) Ensure your personal branch is commited using `git commit`</span>
+<span class="fragment">2) Swapping back onto the main branch using `git checkout main`</span>
+<span class="fragment">3) Pulling the new main code using `git pull`</span>
+<span class="fragment">4) Then go back into your personal branch (`git checkout my-changes`)</span>
+<span class="fragment">5) Merge the local branch with the main using `git merge main`</span>
+<span class="fragment">6) Resolve conflicts (e.g. using Zed _Conflict Resolution_ view)</span>
 
-1) Ensure your personal branch is commited using `git commit`
-
-</div>
-<div class="fragment" markdown="1">
-
-2) Swapping back onto the main branch using `git checkout main`
-
-</div>
-<div class="fragment" markdown="1">
-
-3) Pulling the new main code using `git pull`
-
-</div>
-<div class="fragment" markdown="1">
-
-4) Then go back into your personal branch (`git checkout my-changes`)
-
-</div>
-<div class="fragment" markdown="1">
-
-5) Merge the local branch with the main using `git merge main`
-
-</div>
-<div class="fragment" markdown="1">
-
-6) Resolve conflicts (e.g. using Zed _Conflict Resolution_ view)
-
-</div>
 ---
 
 # Python installation issues?

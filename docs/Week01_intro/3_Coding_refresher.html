@@ -45,76 +45,26 @@
 
 We will use some data from the NASA exoplanet archive for this.
 
-<div class="fragment" markdown="1">
+<span class="fragment">Please open `all_code/coding_referesher_example.py` in Zed</span>
 
-Please open `all_code/coding_referesher_example.py` in Zed
-
-</div>
 -v-
 ## Course Roadmap
-<div class="fragment" markdown="1">
+- <span class="fragment">**Data Acquisition:** Querying NASA Exoplanet Archive via TAP</span>
+- <span class="fragment">**Visualisation:** Best practices & multidimensional population plots</span>
+- <span class="fragment">**Modeling & Optimization:** Linear/quadratic fits via Scipy</span>
+- <span class="fragment">**Priors & Likelihood:** Constructing the Bayesian Posterior</span>
+- <span class="fragment">**Model Comparison:** $\chi^2$, BIC, and WAIC</span>
+- <span class="fragment">**MCMC Sampling:** Posterior exploration using `emcee`</span>
+- <span class="fragment">**Code Crafting:** OOP, modular structure & testing</span>
 
-- **Data Acquisition:** Querying NASA Exoplanet Archive via TAP
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Visualisation:** Best practices & multidimensional population plots
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Modeling & Optimization:** Linear/quadratic fits via Scipy
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Priors & Likelihood:** Constructing the Bayesian Posterior
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Model Comparison:** $\chi^2$, BIC, and WAIC
-
-</div>
-<div class="fragment" markdown="1">
-
-- **MCMC Sampling:** Posterior exploration using `emcee`
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Code Crafting:** OOP, modular structure & testing
-
-</div>
 ---
 
 # 1. Accessing Astronomical Data
-<div class="fragment" markdown="1">
-
-- Frequently, we will access APIs from directly within python.
-
-</div>
-<div class="fragment" markdown="1">
-
-- This is most frequently done wit `astroquery`
-
-</div>
-<div class="fragment" markdown="1">
-
-- For this example, we will access the **[NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/)** TAP interface  via `astroquery.ipac.nexsci.nasaexoplanetarchive`
-
-</div>
-<div class="fragment" markdown="1">
-
-- Likely need to filter out planets with highly uncertain parameters/nan values
-
-</div>
-<div class="fragment" markdown="1">
-
-- Prefer standard tabular formats (`astropy.table` / `pandas.DataFrame`)
-
-</div>
+- <span class="fragment">Frequently, we will access APIs from directly within python.</span>
+- <span class="fragment">This is most frequently done wit `astroquery`</span>
+- <span class="fragment">For this example, we will access the **[NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/)** TAP interface  via `astroquery.ipac.nexsci.nasaexoplanetarchive`</span>
+  - <span class="fragment">Likely need to filter out planets with highly uncertain parameters/nan values</span>
+  - <span class="fragment">Prefer standard tabular formats (`astropy.table` / `pandas.DataFrame`)</span>
 -v-
 ## Querying Transit Planet Population - SQL direct
 ```python
@@ -149,59 +99,21 @@ table = NasaExoplanetArchive.query_criteria(table="ps", where=wh, select=cols)
 
 # 2. Visualisations
 ## What Makes a Great Publication Plot?
-<div class="fragment" markdown="1">
+- <span class="fragment">**Perceptually Uniform Color Maps:** Use `viridis`, `magma`, `plasma` (avoid `jet`)</span>
+- <span class="fragment">**Accessibility:** Ensure high contrast and colorblind safety</span>
+- <span class="fragment">**Self-Contained Labels:** Clear physical units on all axes (e.g., $R_\oplus$, $M_\oplus$, $K$)</span>
+- <span class="fragment">**Data-to-Ink Ratio:** Avoid unnecessary grids, borders, or chartjunk</span>
 
-- **Perceptually Uniform Color Maps:** Use `viridis`, `magma`, `plasma` (avoid `jet`)
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Accessibility:** Ensure high contrast and colorblind safety
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Self-Contained Labels:** Clear physical units on all axes (e.g., $R_\oplus$, $M_\oplus$, $K$)
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Data-to-Ink Ratio:** Avoid unnecessary grids, borders, or chartjunk
-
-</div>
 -v-
 ## Your turn - the planetary population in multiple dimensions
 - Using matplotlib, 
-<div class="fragment" markdown="1">
+- <span class="fragment">**X-axis:** Planetary Mass ($M_\oplus$)</span>
+- <span class="fragment">**Y-axis:** Planetary Radius ($R_\oplus$)</span>
+- <span class="fragment">**Color (cmap):** Planetary Equilibrium Temp ($T_{\text{eq}}$)</span>
+- <span class="fragment">**Marker Size:** Stellar Magnitude ($V$ or $K$)</span>
+- <span class="fragment">Try other parameters (e.g. period, temperature, stellar radius, etc)</span>
+- <span class="fragment">Try other plot types, e.g. a 2D kernel density estimation (KDE) with `seaborn`</span>
 
-- **X-axis:** Planetary Mass ($M_\oplus$)
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Y-axis:** Planetary Radius ($R_\oplus$)
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Color (cmap):** Planetary Equilibrium Temp ($T_{\text{eq}}$)
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Marker Size:** Stellar Magnitude ($V$ or $K$)
-
-</div>
-<div class="fragment" markdown="1">
-
-- Try other parameters (e.g. period, temperature, stellar radius, etc)
-
-</div>
-<div class="fragment" markdown="1">
-
-- Try other plot types, e.g. a 2D kernel density estimation (KDE) with `seaborn`
-
-</div>
 -v-
 
 ```
@@ -222,38 +134,16 @@ plt.show()
 
 # 3. Building parametric models
 #### Example - Mass-Radius Relation
-<div class="fragment" markdown="1">
+- <span class="fragment">Planetary compositions mean $R$ and $M$ should correlate...</span>
+- <span class="fragment">Let's try to build a parametric model for exoplanet mass (specifically for _sub-Neptunes_ with $1.8 \le R_\oplus \le 6.0$)</span>
+- <span class="fragment">**Simplifying Assumption:** Radius $R$ is known precisely ($\sigma_R \ll \sigma_M$)</span>
 
-- Planetary compositions mean $R$ and $M$ should correlate...
-
-</div>
-<div class="fragment" markdown="1">
-
-- Let's try to build a parametric model for exoplanet mass (specifically for _sub-Neptunes_ with $1.8 \le R_\oplus \le 6.0$)
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Simplifying Assumption:** Radius $R$ is known precisely ($\sigma_R \ll \sigma_M$)
-
-</div>
 -v-
 ### Your turn: Building a parametric model in python
-<div class="fragment" markdown="1">
+- <span class="fragment">Create functions that, given a radius and a list of parameters (the polynomial coefficients) produces an expected mass.</span>
+- <span class="fragment">Model 1 (Linear): $\ln(M) = a \ln(R) + b$</span>
+- <span class="fragment">Model 2 (Quadratic): $\ln(M) = c_2 \ln(R)^2 + c_1 \ln(R) + c_0$</span>
 
-- Create functions that, given a radius and a list of parameters (the polynomial coefficients) produces an expected mass.
-
-</div>
-<div class="fragment" markdown="1">
-
-- Model 1 (Linear): $\ln(M) = a \ln(R) + b$
-
-</div>
-<div class="fragment" markdown="1">
-
-- Model 2 (Quadratic): $\ln(M) = c_2 \ln(R)^2 + c_1 \ln(R) + c_0$
-
-</div>
 -v-
 ```
 def linear_model(theta, x):
@@ -271,95 +161,39 @@ def quadratic_model(theta, x):
 # Aside - the Normal distribution
 
 ## Observational Errors to the Gaussian Distribution
-<div class="fragment" markdown="1">
-
-- **Abraham de Moivre (1733):** First derived the bell curve as a limit of binomial distributions
-
-</div>
-<div class="fragment" markdown="1">
-
-- **The Astronomy Problem (1800s):** How do you combine noisy, discordant telescope measurements?
-
-</div>
+- <span class="fragment">**Abraham de Moivre (1733):** First derived the bell curve as a limit of binomial distributions</span>
+- <span class="fragment">**The Astronomy Problem (1800s):** How do you combine noisy, discordant telescope measurements?</span>
 - **Carl Friedrich Gauss (1809):** Showed that assuming the **arithmetic mean** is optimal *forces* observational errors to follow a specific probability density:
-<div class="fragment" markdown="1">
+  <span class="fragment">$$P(\epsilon) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{\epsilon^2}{2\sigma^2}\right)$$</span>
+- <span class="fragment">Justified the **Method of Least Squares** on probabilistic grounds</span>
 
-$$P(\epsilon) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{\epsilon^2}{2\sigma^2}\right)$$
-
-</div>
-<div class="fragment" markdown="1">
-
-- Justified the **Method of Least Squares** on probabilistic grounds
-
-</div>
 ---
 
 # Orbit Determination in the 19th Century
 ## Ceres, Neptune, and the Power of Least Squares
 - **The Rediscovery of Ceres (1801):**
-<div class="fragment" markdown="1">
-
-- Giuseppe Piazzi lost track of dwarf planet Ceres after only 40 days of observations
-
-</div>
-<div class="fragment" markdown="1">
-
-- Gauss used least-squares & normal error assumptions to predict where it would reappear
-
-</div>
-<div class="fragment" markdown="1">
-
-- Astronomers found Ceres exactly where Gauss pointed his model!
-
-</div>
+  - <span class="fragment">Giuseppe Piazzi lost track of dwarf planet Ceres after only 40 days of observations</span>
+  - <span class="fragment">Gauss used least-squares & normal error assumptions to predict where it would reappear</span>
+  - <span class="fragment">Astronomers found Ceres exactly where Gauss pointed his model!</span>
 - **The Discovery of Neptune (1846):**
-<div class="fragment" markdown="1">
+  - <span class="fragment">Anomalies in Uranus's orbit pointed to an unseen 8th planet</span>
+  - <span class="fragment">Urbain Le Verrier used orbital mechanics & observational error modeling to calculate its position</span>
+  - <span class="fragment">Galle observed Neptune on the first night of searching—a triumph of celestial mechanics & data fitting</span>
 
-- Anomalies in Uranus's orbit pointed to an unseen 8th planet
-
-</div>
-<div class="fragment" markdown="1">
-
-- Urbain Le Verrier used orbital mechanics & observational error modeling to calculate its position
-
-</div>
-<div class="fragment" markdown="1">
-
-- Galle observed Neptune on the first night of searching—a triumph of celestial mechanics & data fitting
-
-</div>
 ---
 
 # 4. Model optimisation
 
-<div class="fragment" markdown="1">
+- <span class="fragment">We want to find the parameters which best fit the data</span>
+- <span class="fragment">The probability distribution for a datapoint, $y_i$, normally distributed from some model value $f(x)$, is $P(y_i | f) = \frac{\exp(-(y_i-f(x_i))^2/2\sigma_i^2))}{\sqrt{2\pi}\sigma_i}$</span>
+- <span class="fragment">The "likelihood" is the probability of obtaining your data $y$ given the model $f$ and the fixed observed values of $x_i$ and $\sigma_i$ $\mathcal{L} = P({y}^N_{i=1} | f, I) = \prod_{i=1}^N P(y_i | f) $</span>
+- <span class="fragment">The "log likelihood" remove the exponential term giving: $\ln \mathcal{L} = K - \sum_{i=1}^N\frac{(y_i-f(x_i))^2}{2\sigma_{yi}^2} = K - \frac{1}{2}\chi^2 $</span>
 
-- We want to find the parameters which best fit the data
-
-</div>
-<div class="fragment" markdown="1">
-
-- The probability distribution for a datapoint, $y_i$, normally distributed from some model value $f(x)$, is $P(y_i | f) = \frac{\exp(-(y_i-f(x_i))^2/2\sigma_i^2))}{\sqrt{2\pi}\sigma_i}$
-
-</div>
-<div class="fragment" markdown="1">
-
-- The "likelihood" is the probability of obtaining your data $y$ given the model $f$ and the fixed observed values of $x_i$ and $\sigma_i$ $\mathcal{L} = P({y}^N_{i=1} | f, I) = \prod_{i=1}^N P(y_i | f) $
-
-</div>
-<div class="fragment" markdown="1">
-
-- The "log likelihood" remove the exponential term giving: $\ln \mathcal{L} = K - \sum_{i=1}^N\frac{(y_i-f(x_i))^2}{2\sigma_{yi}^2} = K - \frac{1}{2}\chi^2 $
-
-</div>
 -v-
 
 ### Your turn: Assessing log likelihood
-<div class="fragment" markdown="1">
+- <span class="fragment">Create a function which can compute the log likelihood for your example function</span>
 
-- Create a function which can compute the log likelihood for your example function
-
-</div>
 -v-
 ```
 def log_likelihood(theta, x, y, yerr, model=linear_model, **kwargs):
@@ -373,57 +207,22 @@ def log_likelihood(theta, x, y, yerr, model=linear_model, **kwargs):
 -v-
 
 ## Optimization: Gradient Descent vs. Direct Search
-<div class="fragment" markdown="1">
-
-- **Best-Fit Search:** Finding parameter set $\widehat{\theta}$ that maximises log likelihood.
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Gradient Descent:** Steps downhill using local "slope" in likelihood, efficient for high dimensions
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Nelder-Mead:** Simplex direct search, useful when gradients are noisy or unavailable
-
-</div>
+- <span class="fragment">**Best-Fit Search:** Finding parameter set $\widehat{\theta}$ that maximises log likelihood.</span>
+- <span class="fragment">**Gradient Descent:** Steps downhill using local "slope" in likelihood, efficient for high dimensions</span>
+- <span class="fragment">**Nelder-Mead:** Simplex direct search, useful when gradients are noisy or unavailable</span>
 -v-
 
 <img src="../slide_data/slide_images/Gradient descent.png"  class="r-stretch">
 
 -v-
 ## Frequentist Metrics: $\chi^2$ & BIC
-<div class="fragment" markdown="1">
+- <span class="fragment">**$\chi^2$ Minimization:** $\chi^2 = \sum \frac{(y_i - f(x_i, \theta))^2}{\sigma_i^2}$</span>
+  - <span class="fragment">For well-behaved gaussian distributions, maximising log likelihood is equivalent to minimising $\chi^2$.</span>
+  - <span class="fragment">**Reduced $\chi^2$ ($\chi^2_\nu$):** $\chi^2 / (N - k)$</span>
+- <span class="fragment">**Bayesian Information Criterion (BIC):**</span>
+  <span class="fragment">$$\text{BIC} = k \ln(N) - 2 \ln(\widehat{L}) \approx \chi^2 + k \ln(N)$$</span>
+  - <span class="fragment">$\Delta\text{BIC} > 10$ indicates strong evidence against the higher-BIC model</span>
 
-- **$\chi^2$ Minimization:** $\chi^2 = \sum \frac{(y_i - f(x_i, \theta))^2}{\sigma_i^2}$
-
-</div>
-<div class="fragment" markdown="1">
-
-- For well-behaved gaussian distributions, maximising log likelihood is equivalent to minimising $\chi^2$.
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Reduced $\chi^2$ ($\chi^2_\nu$):** $\chi^2 / (N - k)$
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Bayesian Information Criterion (BIC):**
-
-</div>
-<div class="fragment" markdown="1">
-
-$$\text{BIC} = k \ln(N) - 2 \ln(\widehat{L}) \approx \chi^2 + k \ln(N)$$
-
-</div>
-<div class="fragment" markdown="1">
-
-- $\Delta\text{BIC} > 10$ indicates strong evidence against the higher-BIC model
-
-</div>
 -v-
 
 #### The importance of model comparison
@@ -449,75 +248,30 @@ def BIC(loglik,n_params,nsamps):
 ---
 
 # 5. Bayesian Priors & Posterior Formulation
-<div class="fragment" markdown="1">
-
-- We usually have information about our parameters - **priors**
-
-</div>
-<div class="fragment" markdown="1">
-
-- This could be from past observations or theoretical considerations
-
-</div>
+- <span class="fragment">We usually have information about our parameters - **priors**</span>
+  - <span class="fragment">This could be from past observations or theoretical considerations</span>
 -v-
-<div class="fragment" markdown="1">
+- <span class="fragment">To compute the most likely model given the datapoints and the priors, we use Bayes theorem: $ P(f | {y}^N_{i=1}, I) = \frac{P({y}^N_{i=1} | f, I) P(f | I)}{P({y}^N_{i=1} | I)}$:</span>
+  - <span class="fragment">The likelihood function $P({y}^N_{i=1} | f, I)$</span>
+  - <span class="fragment">Our prior knowledge on model parameters $P(f | I)$</span>
+  - <span class="fragment">$P({y}^N_{i=1} | I)$ - the probability of datapoints given their position and error (Typically this constant and can be ignored.)</span>
 
-- To compute the most likely model given the datapoints and the priors, we use Bayes theorem: $ P(f | {y}^N_{i=1}, I) = \frac{P({y}^N_{i=1} | f, I) P(f | I)}{P({y}^N_{i=1} | I)}$:
-
-</div>
-<div class="fragment" markdown="1">
-
-- The likelihood function $P({y}^N_{i=1} | f, I)$
-
-</div>
-<div class="fragment" markdown="1">
-
-- Our prior knowledge on model parameters $P(f | I)$
-
-</div>
-<div class="fragment" markdown="1">
-
-- $P({y}^N_{i=1} | I)$ - the probability of datapoints given their position and error (Typically this constant and can be ignored.)
-
-</div>
 -v-
 ## Types of Prior
 - **Uniform (Flat) Priors:** 
-<div class="fragment" markdown="1">
-
-- Restricts parameters to physically allowed ranges (e.g., positive mass/slope)
-
-</div>
-<div class="fragment" markdown="1">
-
-- Gives equal probability to all values within bounds, 0 outside
-
-</div>
+  - <span class="fragment">Restricts parameters to physically allowed ranges (e.g., positive mass/slope)</span>
+  - <span class="fragment">Gives equal probability to all values within bounds, 0 outside</span>
 - **Gaussian (Informative) Priors:**
-<div class="fragment" markdown="1">
+  - <span class="fragment">Incorporates previous measurements (e.g., stellar abundance or known inclination)</span>
+  - <span class="fragment">Penalizes parameter values as they move further from the expected mean</span>
 
-- Incorporates previous measurements (e.g., stellar abundance or known inclination)
-
-</div>
-<div class="fragment" markdown="1">
-
-- Penalizes parameter values as they move further from the expected mean
-
-</div>
 -v-
 
 #### Your turn: Adding a prior function
 
-<div class="fragment" markdown="1">
+- <span class="fragment">Add a function which, given priors for each parameter, adds a log prior term (e.g. ensures the gradient is uniformbetween 0 and 5)</span>
+- <span class="fragment">Log likelihood & log prior can then produce a combined **log probability** term for gradient descent.</span>
 
-- Add a function which, given priors for each parameter, adds a log prior term (e.g. ensures the gradient is uniformbetween 0 and 5)
-
-</div>
-<div class="fragment" markdown="1">
-
-- Log likelihood & log prior can then produce a combined **log probability** term for gradient descent.
-
-</div>
 -v-
 
 ```
@@ -544,148 +298,57 @@ def log_prior_linear(theta):
 
 # 6. MCMC & Sampling
 ## Posterior Exploration
-<div class="fragment" markdown="1">
+- <span class="fragment">Single best-fits ignore parameter uncertainties and complex parameter trade-offs</span>
+- <span class="fragment">**Markov Chain Monte Carlo (MCMC):** Explores the full probability distribution $P(\theta|D)$</span>
+- <span class="fragment">Uses **Metropolis** algorithm to [step around parameter space](https://chi-feng.github.io/mcmc-demo/app.html?algorithm=RandomWalkMH&target=standard).</span>
+- <span class="fragment">**Ensemble Samplers (`emcee`):** Uses multiple interconnected "walkers" to map parameter space</span>
 
-- Single best-fits ignore parameter uncertainties and complex parameter trade-offs
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Markov Chain Monte Carlo (MCMC):** Explores the full probability distribution $P(\theta|D)$
-
-</div>
-<div class="fragment" markdown="1">
-
-- Uses **Metropolis** algorithm to [step around parameter space](https://chi-feng.github.io/mcmc-demo/app.html?algorithm=RandomWalkMH&target=standard).
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Ensemble Samplers (`emcee`):** Uses multiple interconnected "walkers" to map parameter space
-
-</div>
 -v-
 
 #### Your turn: running emcee
 
-<div class="fragment" markdown="1">
+- <span class="fragment">Use emcee and your log probaility term to sample the parameters and their values</span>
+- <span class="fragment">Use the `corner` module to plot the sampled parameter estimates</span>
 
-- Use emcee and your log probaility term to sample the parameters and their values
-
-</div>
-<div class="fragment" markdown="1">
-
-- Use the `corner` module to plot the sampled parameter estimates
-
-</div>
 -v-
 
-<div class="fragment" markdown="1">
+- <span class="fragment">**Bayesian Evidence ($\mathcal{Z}$):** Integral of Likelihood $\times$ Prior over all parameters</span>
+  <span class="fragment">$$\mathcal{Z} = \int P(D|\theta) P(\theta) d\theta$$</span>
+<span class="fragment"><img src="../slide_data/slide_images/Evidence.png"  height="750"></span>
 
-- **Bayesian Evidence ($\mathcal{Z}$):** Integral of Likelihood $\times$ Prior over all parameters
-
-</div>
-<div class="fragment" markdown="1">
-
-$$\mathcal{Z} = \int P(D|\theta) P(\theta) d\theta$$
-
-</div>
-<div class="fragment" markdown="1">
-
-<img src="../slide_data/slide_images/Evidence.png"  height="750">
-
-</div>
 -v-
 
 **Advanced Samplers:**
-<div class="fragment" markdown="1">
-
-- **HMC / NUTS (`PyMC`):** Uses gradient physics to navigate high-dimensional spaces ([e.g.](https://chi-feng.github.io/mcmc-demo/app.html?algorithm=EfficientNUTS&target=banana))
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Nested Sampling (`dynesty`, `ultranest`):** Integrates shell-by-shell to directly compute $\mathcal{Z}$
-
-</div>
+  - <span class="fragment">**HMC / NUTS (`PyMC`):** Uses gradient physics to navigate high-dimensional spaces ([e.g.](https://chi-feng.github.io/mcmc-demo/app.html?algorithm=EfficientNUTS&target=banana))</span>
+  - <span class="fragment">**Nested Sampling (`dynesty`, `ultranest`):** Integrates shell-by-shell to directly compute $\mathcal{Z}$</span>
 -v-
 
 ## MCMC Diagnostic Checklist
-<div class="fragment" markdown="1">
+<span class="fragment">1. Inspect trace plots for convergence and initial burn-in phase</span>
+<span class="fragment">2. Check Integrated Autocorrelation Time ($\tau$)</span>
+<span class="fragment">3. Target total sample size $\gg 50 \times \tau$</span>
+<span class="fragment">4. Plot corner distributions to reveal parameter correlations</span>
 
-1. Inspect trace plots for convergence and initial burn-in phase
-
-</div>
-<div class="fragment" markdown="1">
-
-2. Check Integrated Autocorrelation Time ($\tau$)
-
-</div>
-<div class="fragment" markdown="1">
-
-3. Target total sample size $\gg 50 \times \tau$
-
-</div>
-<div class="fragment" markdown="1">
-
-4. Plot corner distributions to reveal parameter correlations
-
-</div>
 ---
 
 # 7. Advanced Model Selection
 ## Information Criteria with `ArviZ`
-<div class="fragment" markdown="1">
+- <span class="fragment">Simple $\chi^2$ and BIC fail when priors strongly constrain parameters or parameters correlate</span>
+- <span class="fragment">**Watanabe-Akaike Information Criterion (WAIC):** Fully Bayesian metric predicting out-of-sample data accuracy</span>
+- <span class="fragment">**LOO (Leave-One-Out Cross-Validation):** Estimates model generalization error without needing to re-fit</span>
 
-- Simple $\chi^2$ and BIC fail when priors strongly constrain parameters or parameters correlate
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Watanabe-Akaike Information Criterion (WAIC):** Fully Bayesian metric predicting out-of-sample data accuracy
-
-</div>
-<div class="fragment" markdown="1">
-
-- **LOO (Leave-One-Out Cross-Validation):** Estimates model generalization error without needing to re-fit
-
-</div>
 ---
 
 # 8. Software Architecture in Astrophysics
 ## Code Organization Hierarchy
-<div class="fragment" markdown="1">
-
-- **Scripts:** Quick data processing (hard to reuse or test)
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Functions:** Modular, single-responsibility logic with clear docstrings
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Classes:** Object-oriented code grouping data, models, and fitting methods together
-
-</div>
+- <span class="fragment">**Scripts:** Quick data processing (hard to reuse or test)</span>
+- <span class="fragment">**Functions:** Modular, single-responsibility logic with clear docstrings</span>
+- <span class="fragment">**Classes:** Object-oriented code grouping data, models, and fitting methods together</span>
 -v-
 ## Production-Grade Python Tips
-<div class="fragment" markdown="1">
-
-- **Type Hinting & Docstrings:** Makes code readable and self-documenting
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Unit Testing (`pytest`):** Automatically catches numerical bugs and regressions
-
-</div>
-<div class="fragment" markdown="1">
-
-- **Version Control:** Git history for reproducible scientific workflows
-
-</div>
+- <span class="fragment">**Type Hinting & Docstrings:** Makes code readable and self-documenting</span>
+- <span class="fragment">**Unit Testing (`pytest`):** Automatically catches numerical bugs and regressions</span>
+- <span class="fragment">**Version Control:** Git history for reproducible scientific workflows</span>
                     </textarea>
                 </section>
             </div>

@@ -42,64 +42,21 @@
                     <!-- The markdown must be placed to the whole left to prevent indentation issues like https://github.com/MartenBE/mkslides/issues/52 -->
                     <textarea data-template>
 # Exoplanetary science = Data science
-<div class="fragment" markdown="1">
-
-The vast majority of exoplanetary science is, in fact, **data science**.
-
-</div>
-<div class="fragment" markdown="1">
-
-- API/SQL database access
-
-</div>
-<div class="fragment" markdown="1">
-
-- Regression & classification
-
-</div>
-<div class="fragment" markdown="1">
-
-- Model building, optimising, sampling.
-
-</div>
-<div class="fragment" markdown="1">
-
-- Data visualisation
-
-</div>
+<span class="fragment">The vast majority of exoplanetary science is, in fact, **data science**.</span>
+- <span class="fragment">API/SQL database access</span>
+- <span class="fragment">Regression & classification</span>
+- <span class="fragment">Model building, optimising, sampling.</span>
+- <span class="fragment">Data visualisation</span>
 -v-
 
 ## Most problems in observational astronomy can be thought of in the following way:
-<div class="fragment" markdown="1">
+<span class="fragment">1) Imagine a **hypothesis** (transit, supernova, etc)</span>
+<span class="fragment">2) Create a **parameterised model** translating physics into observables</span>
+<span class="fragment">3) Take **observations** (+ "reduce" them, e.g. remove systematic noise)</span>
+<span class="fragment">4) **Fit** the model to the observations</span>
+<span class="fragment">5) **Sample** the parameters to derive uncertainties</span>
+<span class="fragment">6) Use **model comparison** to test whether the hypothesis is justified</span>
 
-1) Imagine a **hypothesis** (transit, supernova, etc)
-
-</div>
-<div class="fragment" markdown="1">
-
-2) Create a **parameterised model** translating physics into observables
-
-</div>
-<div class="fragment" markdown="1">
-
-3) Take **observations** (+ "reduce" them, e.g. remove systematic noise)
-
-</div>
-<div class="fragment" markdown="1">
-
-4) **Fit** the model to the observations
-
-</div>
-<div class="fragment" markdown="1">
-
-5) **Sample** the parameters to derive uncertainties
-
-</div>
-<div class="fragment" markdown="1">
-
-6) Use **model comparison** to test whether the hypothesis is justified
-
-</div>
 ---
 # Introducing myself
 
@@ -121,191 +78,77 @@ Most interesting recent example, **HD110067**, a resonant chain of 6 planets whi
 
 ---
 # We learn by _doing_.
-<div class="fragment" markdown="1">
+- <span class="fragment">I will usually provide one bare-bones examples which require _thinking_ to complete a simplified version.</span>
+- <span class="fragment">With this knowledge in hand, we can see how existing astronomical software runs and apply to some real data</span>
+- <span class="fragment">There will be multiple examples provided</span>
 
-- I will usually provide one bare-bones examples which require _thinking_ to complete a simplified version.
-
-</div>
-<div class="fragment" markdown="1">
-
-- With this knowledge in hand, we can see how existing astronomical software runs and apply to some real data
-
-</div>
-<div class="fragment" markdown="1">
-
-- There will be multiple examples provided
-
-</div>
 -v-
 
 # We learn by _showing_
-<div class="fragment" markdown="1">
+- <span class="fragment">For each topic, each of you will create a short (<10 minute, ~5 slide) presentation each of which will be worth ~7.5% of the total credit</span>
+- <span class="fragment">There will also be a presentation of the final project.</span>
 
-- For each topic, each of you will create a short (<10 minute, ~5 slide) presentation each of which will be worth ~7.5% of the total credit
-
-</div>
-<div class="fragment" markdown="1">
-
-- There will also be a presentation of the final project.
-
-</div>
 ---
 
 # 2-week structure:
 - *Monday 16:00*: presenting previous week's project
-<div class="fragment" markdown="1">
+- <span class="fragment">*Monday 17:00*: Introduction to new subject (slides)</span>
+- <span class="fragment">*Tuesday 09:00*: Introduction to simple code (python)</span>
+- <span class="fragment">_1 week take-home playing with code/data/etc._</span>
+- <span class="fragment">*Monday 16:00-18:00*: Advanced coding sessions (python)</span>
+- <span class="fragment">*Tuesday 09:00*: Open door policy for specific questions</span>
+- <span class="fragment">_1 week take-home finalising analysis & presentation._</span>
 
-- *Monday 17:00*: Introduction to new subject (slides)
-
-</div>
-<div class="fragment" markdown="1">
-
-- *Tuesday 09:00*: Introduction to simple code (python)
-
-</div>
-<div class="fragment" markdown="1">
-
-- _1 week take-home playing with code/data/etc._
-
-</div>
-<div class="fragment" markdown="1">
-
-- *Monday 16:00-18:00*: Advanced coding sessions (python)
-
-</div>
-<div class="fragment" markdown="1">
-
-- *Tuesday 09:00*: Open door policy for specific questions
-
-</div>
-<div class="fragment" markdown="1">
-
-- _1 week take-home finalising analysis & presentation._
-
-</div>
 -v-
 
 # Assessment:
-<div class="fragment" markdown="1">
+- <span class="fragment">0.5% for attendance at each session (total: 10%)</span>
+- <span class="fragment">45% from small projects (7.5% each)</span>
+- <span class="fragment">35% from a focussed final project (20% report, 15% presentation)</span>
 
-- 0.5% for attendance at each session (total: 10%)
-
-</div>
-<div class="fragment" markdown="1">
-
-- 45% from small projects (7.5% each)
-
-</div>
-<div class="fragment" markdown="1">
-
-- 35% from a focussed final project (20% report, 15% presentation)
-
-</div>
 -v-
 
 ## LLM/AI ethics
 
 - Generative AI is the most useful coding support
-<div class="fragment" markdown="1">
+- <span class="fragment">Use it for technical support (_Why is my code crashing?_)</span>
+- <span class="fragment">Do not use it to **replace understanding** (_Build me an interior structure EoS_)</span>
+- <span class="fragment">You will have to demonstrate understanding in presentation questions.</span>
 
-- Use it for technical support (_Why is my code crashing?_)
-
-</div>
-<div class="fragment" markdown="1">
-
-- Do not use it to **replace understanding** (_Build me an interior structure EoS_)
-
-</div>
-<div class="fragment" markdown="1">
-
-- You will have to demonstrate understanding in presentation questions.
-
-</div>
 -v-
 
 ## Peer support
 
 - Is welcome. Please help out others!
-<div class="fragment" markdown="1">
+- <span class="fragment">But project/presentations should be **individudal**</span>
 
-- But project/presentations should be **individudal**
-
-</div>
 ---
 # Topics
-<div class="fragment" markdown="1">
+<span class="fragment">wk 1) Intro (installation, stats/coding refresher)</span>
+<span class="fragment">2+3) Stars (Gaia)</span>
+<span class="fragment">4+5) Transiting Planets</span>
+<span class="fragment">6+7) Radial Velocities</span>
+<span class="fragment">8+9) Interior structures</span>
+<span class="fragment">10+11) Exoplanetary Imaging</span>
+<span class="fragment">12+13) JWST atmospheric spectroscopy</span>
 
-wk 1) Intro (installation, stats/coding refresher)
-
-</div>
-<div class="fragment" markdown="1">
-
-2+3) Stars (Gaia)
-
-</div>
-<div class="fragment" markdown="1">
-
-4+5) Transiting Planets
-
-</div>
-<div class="fragment" markdown="1">
-
-6+7) Radial Velocities
-
-</div>
-<div class="fragment" markdown="1">
-
-8+9) Interior structures
-
-</div>
-<div class="fragment" markdown="1">
-
-10+11) Exoplanetary Imaging
-
-</div>
-<div class="fragment" markdown="1">
-
-12+13) JWST atmospheric spectroscopy
-
-</div>
 -v-
 
 ### Links to other researchers
-<div class="fragment" markdown="1">
+- <span class="fragment">CHEOPS instrument team (transit photometry)</span>
+- <span class="fragment">Yann Alibert & Christoph Mordasini - Interior structure modelling</span>
+- <span class="fragment">Jonas Kuhn - Imaging & instrumentation (e.g. PLACID)</span>
+- <span class="fragment">Brice Demory & Daniel Kitzmann - atmospheric spectroscopy</span>
 
-- CHEOPS instrument team (transit photometry)
+<span class="fragment">For masters projects, hopefully these projects from a useful intro!</span>
 
-</div>
-<div class="fragment" markdown="1">
-
-- Yann Alibert & Christoph Mordasini - Interior structure modelling
-
-</div>
-<div class="fragment" markdown="1">
-
-- Jonas Kuhn - Imaging & instrumentation (e.g. PLACID)
-
-</div>
-<div class="fragment" markdown="1">
-
-- Brice Demory & Daniel Kitzmann - atmospheric spectroscopy
-
-</div>
-<div class="fragment" markdown="1">
-
-For masters projects, hopefully these projects from a useful intro!
-
-</div>
 -v-
 
 # Final project
 Take a deep-dive into astronomical data, and write-up a ~10 page report (due late January 2027).
 
-<div class="fragment" markdown="1">
+<span class="fragment">Can go into deeper detail into any of the topics covered, or combine some of them (e.g. transits+ RVs + interior modelling).</span>
 
-Can go into deeper detail into any of the topics covered, or combine some of them (e.g. transits+ RVs + interior modelling).
-
-</div>
 ---
 
 # Questions?

@@ -250,7 +250,7 @@ What we want to learn:
 - Using astronomical software like astropy
 - Manipulating large databases and extracting useful information
 - Plotting/visualising data
-- Reearching & comparing to some real-world research
+- Researching & comparing to some real-world research
 
 -v-
 
@@ -274,6 +274,8 @@ The others are simply examples - pick and choose the most interesting! [+]
 
 - Query Gaia using a simple threshold in distance/parallax[+]
 - Explore the colours/parameters/etc of this sample[+]
+- How frequent are the various types/masses of stars (does it match the IMF/initial mass function) [+]
+- Cross-match with other data (e.g. 2MASS IR colours, X-ray measurements, exoplanet archive, etc)[+]
 
 -v-
 
@@ -285,9 +287,10 @@ The others are simply examples - pick and choose the most interesting! [+]
 
 -v-
 
-3) How are blue giants (e.g. O & B stars) distributed through the galaxy? Is it different from  red giants
+3) How are blue giants (e.g. O & B stars) distributed through the galaxy? Is it different from red giants?
 - Create some function to separate red & blue giants stars (abs. mag, colour, etc?)
 - Calculate the 2D and 3D locations of each (e.g. as a function of galactic coordinates)
+- (Potentially apply dust maps to get true colours)
 
 -v-
 
@@ -305,6 +308,8 @@ Open question - *Can you estimate the age of clusters from the MS turn-off*?
 5) Can we find the fastest-velocity stars?
 
 - Calculate true velocity from projected/angular velocity and query Gaia
+- What types of stars are these? 
+- Which way are they moving to (and from)?
 - What is the cause of their high speed?
 
 -v-

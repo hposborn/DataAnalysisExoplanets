@@ -57,7 +57,7 @@ slides:
     # For each Markdown file, the whole file content is given to the function as
     # a str. The returned string is then further processed as the Markdown to
     # give to Reveal.js
-    preprocess_script: data/preprocessor.py
+    preprocess_script: all_slides/slide_data/data/preprocessor.py
 
     # Separator to determine notes of the slide: regexp
     # (see https://revealjs.com/markdown/#external-markdown)
