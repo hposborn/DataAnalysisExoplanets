@@ -2,32 +2,30 @@
 import re
 
 def preprocess(md: str) -> str:
-
-# 1. Handle line-by-line [+] fragments safely, preserving indentation & lists
+    # 1. Handle line-by-line [+] fragments robustly (works for ordered, unordered, anywhere on line)
     new_lines = []
     for line in md.split('\n'):
         if '[+]' in line:
-            # Capture leading whitespace (indentation)
-            indent_len = len(line) - len(line.lstrip())
-            indent = line[:indent_len]
-            stripped = line.strip()
+            # Strip [+] from wherever it is placed in the line
+            clean_content = line.replace('[+]', '')
 
-            # Remove [+] from the stripped line content
-            content_without_plus = stripped.replace('[+]', '').strip()
+            # Check if it's a list item (unordered *, -, + or ordered 1., 2., etc.)
+            list_match = re.match(r'^(\s*)([\*\-\+]|\d+[\.\)])\s+(.*)$', clean_content)
 
-            # Check if it's a bullet list item (e.g., starts with * or -)
-            if content_without_plus.startswith(('* ', '- ', '+ ')):
-                bullet = content_without_plus[:2]
-                text = content_without_plus[2:].strip()
-                # Rebuild preserving indentation, bullet, and wrapping text in span
-                clean_line = f'{indent}{bullet}<span class="fragment">{text}</span>'
+            if list_match:
+                indent, marker, text = list_match.groups()
+                # Rebuild keeping the list marker and wrapping only the text in a fragment span
+                new_line = f'{indent}{marker} <span class="fragment">{text.strip()}</span>'
             else:
-                # Regular paragraph or text line
-                clean_line = f'{indent}<span class="fragment">{content_without_plus}</span>'
+                # Regular paragraph line, preserving original indentation
+                indent_len = len(line) - len(line.lstrip())
+                indent = line[:indent_len]
+                new_line = f'{indent}<span class="fragment">{clean_content.strip()}</span>'
 
-            new_lines.append(clean_line)
+            new_lines.append(new_line)
         else:
             new_lines.append(line)
+    md = '\n'.join(new_lines)
     md = '\n'.join(new_lines)# columns: <!-- c -->, <!-- | -->, <!-- c. -->
     md = re.sub(r"<!--\s*c\s*-->", r'\n<div class="cols" markdown="1"><div markdown="1">\n', md)
     md = re.sub(r"<!--\s*ct\s*-->", r'\n<div class="cols cols-top-align" markdown="1"><div markdown="1">\n', md)

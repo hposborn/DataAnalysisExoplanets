@@ -1,14 +1,15 @@
 ---
 title:"Project 2 - Exoplanet transits"
 ---
-
+[contents]
+---
 [P "The transiting planet population"]
 
 [ifull=https://i0.wp.com/www.hughosborn.co.uk/wp-content/uploads/2023/11/animation_post95_dark.gif]
 
 ---
 
-[P "Transiting surveys"]
+[P "Light curves"]
 
 ### Pixels to lightcurves
 
@@ -71,7 +72,7 @@ title:"Project 2 - Exoplanet transits"
 
 - First space telescope dedicated to transits (launch 2009) 
   - NB: French **CoRoT** (2006) also found planets
-- 4-year mission designed to measure planetary occurrence rates
+- 4-year mission focussed on 0.25% of sky near Cygnus
 - Capable of detecting planets from only a handful of ~100ppm transits
 
 -v-
@@ -97,29 +98,45 @@ title:"Project 2 - Exoplanet transits"
 
 - All-sky transit survey with four small 10cm lensed cameras
 - Unable to find earthlike planets around sunlike stars (but many around M-dwarfs)
-- Multiple pipelines, but SPOC pipeline `PDC_FLUX` is best
+- Multiple pipelines, but SPOC pipeline (e.g. detrended `PDC_FLUX`) is best
 
 -v-
 
 ## PLATO
-
-- ESA project launching early 2027
-- 26$\times$12cm cameras, tiling the same patch of sky
-- Should be able to find transiting earthlike planets
+[i=Plato_spacecraft_esa.png]
 
 -v-
 
-## Roman
+## PLATO
+- ESA project launching early 2027
+- 26$\times$12cm cameras, covering a single 5% of the sky
+- Will be able to find transiting earthlike planets around brighter stars than Kepler
 
 ---
 
 [P "Geometry of a transit"]
 
-<img src="Animated_composite_of_2004_Venus_transit_images_pillars.gif" class="r-stretch" />
+[i="Animated_composite_of_2004_Venus_transit_images_pillars.gif"]
 
 -v-
 
-## Depth
+## Orbits
+
+- Orbital distance (or semi-major axis) related to period through **Kepler's third law** ($P^2 \propto a^3$)[+]
+- Typically close-in planets have circular orbits (or very close to) [+]
+- Some planets orbits in elliptical orbits ($b = a(1-e)$ where $a$ & $b$ are semi-major and -minor axes and $e$ is **eccentricity**)[+]
+- The Sun is found at the ellipse's **focus** (Kepler's first law).[+]
+- Angle from observer to perihelion defined as $\omega$ (**argument of periastron**).[+]
+
+-v-
+
+## Orbits
+[i=Eccentric_planets.gif]
+- Both distance & velocity change along orbit according to Kepler's second law (constant area swept).[+]
+
+-v-
+
+## Transit depth
 
 [i=TransitGeometryP0.png]
 
@@ -140,9 +157,18 @@ title:"Project 2 - Exoplanet transits"
 
 -v-
 
-## Transit duration ()
+## Transit duration (derived)
 
 [i=TransitGeometryP3.png]
+
+-v-
+
+## Transit duration (eccentricity)
+
+- The above assumed a circular orbit [+]
+- Eccentric orbits have variable angular velocities, potentially changing the transit duration significantly [+]
+  - TIC 241249530 b is a good example - transit duration is 2.2hrs implying a $<2$d orbit...[+]
+  - True period is actually 167d (eccentricity of 0.94!)[+]
 
 -v-
 
@@ -188,22 +214,51 @@ title:"Project 2 - Exoplanet transits"
 
 [P "False Positives"]
 
+- Not all dips are due to exoplanets!
+
+-v-
+
+## False Positive - low-mass binaries
+
 [i=exoplanet-mass-radius-all.png]
+
+- Low-mass eclipsing binaries can create Jupiter-like transit depths[+]
+
+-v-
+
+## False Positives
+
+[i=Transit_FP_BEBs.png]
+
+- Diluted binaries are a problem for all transit depths[+]
+- These can be around distant background stars, or close-by binary companions[+]
 
 ---
 
 [P "Exoplanet detection"]
 
-Exoplanets are (usually) extremely periodic. Therefore searches typically iterate through period/frequency space.
+[i=Periodic_Transits.png]
+- Exoplanets are (usually) extremely periodic. Therefore searches typically iterate through period/frequency space.
 
 -v-
 
 ## Packages for exoplanet detection
 
-- bls (e.g. [astropy.timeseries](https://docs.astropy.org/en/stable/timeseries/bls.html); see also [lightkurve docs](https://lightkurve.github.io/lightkurve/tutorials/3-science-examples/exoplanets-identifying-transiting-planet-signals.html))
-- [GerBLS](https://gerbls.readthedocs.io/en/latest/) - 10-20x faster implementation of BLS
-- [transitleastsquares](https://transitleastsquares.readthedocs.io/en/latest/) - includes transit shape in search
-- [Nuance](https://nuance.readthedocs.io/en/latest/) - models both transits and trends/activity
+- `Box least squared` - BLS
+  - Extremely simple grid search looking at "boxcar" filter[+]
+  - Implemented in [astropy.timeseries](https://docs.astropy.org/en/stable/timeseries/bls.html); and [lightkurve docs](https://lightkurve.github.io/lightkurve/tutorials/3-science-examples/exoplanets-identifying-transiting-planet-signals.html))[+]
+
+[ism=BLS_params.png]
+
+-v-
+
+## Packages for exoplanet detection
+
+- [GerBLS](https://gerbls.readthedocs.io/en/latest/) - 10-20x faster implementation of BLS[+]
+- [transitleastsquares](https://transitleastsquares.readthedocs.io/en/latest/) - includes transit shape in search[+]
+- [Nuance](https://nuance.readthedocs.io/en/latest/)* - models both transits and trends/activity[+]
+- [CETRA](https://github.com/leigh2/cetra)* - simultaneous transit + trend fitting (CUDA only)[+]
+  - $^{\rm *}$ - can also search for single transits[+]
 
 ---
 
@@ -214,27 +269,27 @@ Exoplanets are (usually) extremely periodic. Therefore searches typically iterat
 [i=ActivityTESS.png]
 
 - Stars are not constant in flux.
-- We need to account for this variation, by filtering/subtracting it, or co-fitting it.
+- We need to account for this variation, by filtering/subtracting it, or co-fitting it.[+]
 
 -v-
 
 ## Modelling stellar noise
 - Common approaches:
-  * **Filtering** (e.g. Savitsky-Golay, or median filter, implemented with e.g. astropy.timeseries or scipy.signal or wotan)
-  * **Spline** (e.g. cubic bspline, implemented using e.g. scipy.interpolate)
-  * **Local polynomials** around transits
-  * **Gaussian Processes** (e.g. SHO, implemented with e.g. celerite or tinyGP)
-- But removing variability can change transit depth/shape!
-- Best to *mask* identified transits while filtering, or co-fit variability with transit model
+  * **Filtering** (e.g. Savitsky-Golay, or median filter, implemented with e.g. `astropy.timeseries` or `scipy.signal` or [`wotan`](https://wotan.readthedocs.io/en/stable/))[+]
+  * **Splines** (e.g. cubic bspline, implemented using e.g. `scipy.interpolate`)[+]
+  * **Local polynomials** around transits[+]
+  * **Gaussian Processes** (e.g. SHO, implemented with e.g. [`celerite2`](https://celerite2.readthedocs.io/en/latest/index.html) or [`tinyGP`](https://tinygp.readthedocs.io/en/latest/index.html))[+]
+- But removing variability can change transit depth/shape![+]
+- Best to *mask* identified transits while filtering, or co-fit variability with transit model[+]
 
 -v-
 
 ## Modelling stellar noise - GPs
 
-- A way to parameterise correlations with time (e.g. non- or quasi-periodic variability)
-- Covariance: the influence of past & future data on each point
-- Kernel: the mathematical function governing how each point is influenced by past/future data.
-- Hyperparameters: variable parameters governing the kernel (i.e. amplitude, timescale, etc)
+- A way to parameterise correlations with time (e.g. non- or quasi-periodic variability)[+]
+- Covariance: the influence of past & future data on each point[+]
+- Kernel: the mathematical function governing how each point is influenced by past/future data.[+]
+- Hyperparameters: variable parameters governing the kernel (i.e. amplitude, timescale, etc)[+]
 
 -v-
 
@@ -248,10 +303,13 @@ Exoplanets are (usually) extremely periodic. Therefore searches typically iterat
 
 [P "Accessing Data"]
 
-# Accessing photometric data
+## Web-based
+- NASA's [MAST portal](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html) displays all available data products for a star[+]
 
-lightkurve
-
+## Within python
+- The `lightkurve` package retrieves a table of observations within python, e.g.:`lk.search_lightcurve("LHS 1140", mission="TESS", author="SPOC", exptime=120)`[+]
+  - `lightkurve` is also a neat way to interact/plot/detrend/etc lightcurves![+]
+- `astroquery` can also do similar, via e.g. `Observations.query_object("LHS 1140")`[+]
 
 ---
 
@@ -264,57 +322,61 @@ lightkurve
 - Radius ratio $R_p/R_s$
 - Impact parameter $b$
 - Limb darkening
-
-#### Occasionally important:
-- Eccentricity $e$ & argument of periasteron $\omega$
+- Eccentricity $e$ & argument of periasteron $\omega$ (occasionally) [+]
 
 -v-
 
 ## Packages for exoplanet transit modelling
-- [AllesFitter](https://www.allesfitter.com/) - Includes a GUI
-- [Exoplanet](https://docs.exoplanet.codes/en/latest/) - Python class-based. Interfaced with PyMC (HMC sampling)
-- [Juliet](https://juliet.readthedocs.io/en/latest/) - Script-based (YAML). Includes nested sampling.
-- [Batman](https://github.com/lkreidberg/batman) - Simple pythonic transit model.
-- [Pytransit](https://pytransit.readthedocs.io/en/latest/index.html) - Fast fortran back-end. Not very intuitive.
+- [AllesFitter](https://www.allesfitter.com/) - Includes a GUI[+]
+- [Exoplanet](https://docs.exoplanet.codes/en/latest/) - Python class-based. Interfaced with PyMC (HMC sampling)[+]
+- [Juliet](https://juliet.readthedocs.io/en/latest/) - Script-based (YAML). Includes nested sampling.[+]
+- [Batman](https://github.com/lkreidberg/batman) - Simple pythonic transit model.[+]
+- [Pytransit](https://pytransit.readthedocs.io/en/latest/index.html) - Fast fortran back-end. Not very intuitive.[+]
 
 ---
 
-# Project ideas!
+[P "Projects"]
 
-1) Do Neptunes with 10<P<30d host any (undetected) close-in super-Earths?
-2) Which TESS candidates also have archival K2 data, and does this confirm/reveal anything new?
-3) Does TESS data reveal anything new about K2 or CoRoT candidates? Are parameters derived from TESS consistent?
-3) Are the impact parameters of planets in multi-planet systems trend with distance due to mutual inclination? (NB avoid "compact" multis with TTVs)?
-4) How does derived Limb Darkening parameters vary with stellar temperature for the brightest ~10 hot jupiters observed by TESS?
-5) Does recent TESS data for TOIs with $P>250$d (or nan) in the Southern hemisphere help constrain their true periods
-6) Can you fit a transit model to the secondary eclipses of ultra-hot jupiters (e.g. KELT-9), and what does this tell you about the planet?
+### Goal
+
+- Play with some data! [+]
+- Find something new & interesting[+]
+- Make some pretty plots[+]
+- Share this with the class[+]
+
+-v-
+
+### Useful Resources
+
+- [MAST Portal](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html)[+]
+  - To search TESS input catalogue for stars: *Data Category->MAST Catalogs-> TESS Input v8.2* [+]
+- The [NASA exoplanet archive](https://exoplanetarchive.ipac.caltech.edu/); esp `tran_flag=1`, and `tic_id`[+]
+- The [TESS Object of Interest (TOI) Catalogue](https://exofop.ipac.caltech.edu/tess/view_toi.php); all of TESS' planet candidates[+]
+  - Can remove identified false positives, e.g.: `valid_toi_ix = (~np.isin(toi['TESS Disposition'],['EB','IS','V','FP']))&(toi['TESS Disposition']!='FP')`[+]
+  - Some planets have empty or incorrect periods as they were discovered in one or two transits (TOIs with $P>300$d are likely max periods)[+]
+- [ExoFop-TESS](https://exofop.ipac.caltech.edu/tess/) - compiled information about every TIC and follow-up campaigns[+]
+- [TESS Extractor](https://www.tessextractor.app/) - quick online tool for extracting lightcurves[+]
+
+-v-
+
+### Possible project ideas
+
+1. [+] Do Neptunes ($2<R_p<5 R_\oplus$) with 10<P<30d host any (undetected) close-in super-Earths?
+2. [+] Which TESS candidates also have archival K2 data, and does this confirm/reveal anything new?
+3. [+] Does TESS data reveal anything new about K2 (or CoRoT) unconfirmed candidates? Are parameters derived from TESS consistent?
+4. [+] Are the impact parameters of planets in multi-planet systems trend with distance due to mutual inclination? (NB avoid "compact" multis with TTVs)?
+5. [+] How does fitted Limb Darkening parameters vary with stellar temperature for the brightest ~10 hot jupiters observed by TESS?
+6. [+] Does recent TESS data for TOIs with $P>250$d (or $P={\rm nan}$) (e.g. in the Southern hemisphere) help constrain their true periods?
+7. [+] Can you fit a transit model to the secondary eclipses of ultra-hot jupiters (e.g. KELT-9), and what does this tell you about the planet?
 
 -v-
 
 ### Some constraints
-- TTVs mean fitting simple transit models to compact multi-planet systems (i.e. with period ratios <2.25x) fails.
-- It's probably not worth simply searching random stars for new planets, as all the "easy" candidates have been found.
-  - But it's much more likely to find additional planets in systems with already-detected existing planets
-
-<!--
-## Other complications
-
--v- 
-
-Transit timing variations
-
--v- 
-
-Spot-crossing events
+  - *Transit timing variations (TTVs)* from interactions between planets close-to or in resonant orbits (e.g. 5.4 & 10.8d) make fitting simple transit models impossible. [+]
+    - Avoid compact multi-planet systems (i.e. with period ratios <2.25x).[+]
+- It's probably not worth simply searching random stars for new planets, as all the "easy" candidates have been found.[+]
+  - But it's much more likely to find additional planets in systems with already-detected existing planets[+]
 
 -v-
 
-Stellar contamination
-
--v-
-
-Atmospheric transmission
-
----
-
-## How to model exoplanet transits-->
+# Good luck!

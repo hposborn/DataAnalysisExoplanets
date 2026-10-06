@@ -41,13 +41,26 @@
                 >
                     <!-- The markdown must be placed to the whole left to prevent indentation issues like https://github.com/MartenBE/mkslides/issues/52 -->
                     <textarea data-template>
+<ul class="contents-list">
+  <li><a href="#/part-1"><strong>Part 1:</strong> The transiting planet population</a></li>
+  <li><a href="#/part-2"><strong>Part 2:</strong> Light curves</a></li>
+  <li><a href="#/part-3"><strong>Part 3:</strong> Examples of transit surveys/observations</a></li>
+  <li><a href="#/part-4"><strong>Part 4:</strong> Geometry of a transit</a></li>
+  <li><a href="#/part-5"><strong>Part 5:</strong> False Positives</a></li>
+  <li><a href="#/part-6"><strong>Part 6:</strong> Exoplanet detection</a></li>
+  <li><a href="#/part-7"><strong>Part 7:</strong> Stars, Trends & Systmatics</a></li>
+  <li><a href="#/part-8"><strong>Part 8:</strong> Accessing Data</a></li>
+  <li><a href="#/part-9"><strong>Part 9:</strong> Modelling transits</a></li>
+  <li><a href="#/part-10"><strong>Part 10:</strong> Projects</a></li>
+</ul>
+---
 <h2 id="part-1" class="slide-part-title">Part 1: The transiting planet population</h2>
 
 <div style="text-align: center; width: 100%;"><img src="https://i0.wp.com/www.hughosborn.co.uk/wp-content/uploads/2023/11/animation_post95_dark.gif" style="width: 100%; max-height: 620px; object-fit: contain; display: block; margin: 0 auto;" /></div>
 
 ---
 
-<h2 id="part-2" class="slide-part-title">Part 2: Transiting surveys</h2>
+<h2 id="part-2" class="slide-part-title">Part 2: Light curves</h2>
 
 ### Pixels to lightcurves
 
@@ -110,7 +123,7 @@
 
 - First space telescope dedicated to transits (launch 2009) 
   - NB: French **CoRoT** (2006) also found planets
-- 4-year mission designed to measure planetary occurrence rates
+- 4-year mission focussed on 0.25% of sky near Cygnus
 - Capable of detecting planets from only a handful of ~100ppm transits
 
 -v-
@@ -136,29 +149,45 @@
 
 - All-sky transit survey with four small 10cm lensed cameras
 - Unable to find earthlike planets around sunlike stars (but many around M-dwarfs)
-- Multiple pipelines, but SPOC pipeline `PDC_FLUX` is best
+- Multiple pipelines, but SPOC pipeline (e.g. detrended `PDC_FLUX`) is best
 
 -v-
 
 ## PLATO
-
-- ESA project launching early 2027
-- 26$\times$12cm cameras, tiling the same patch of sky
-- Should be able to find transiting earthlike planets
+<div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/Plato_spacecraft_esa.png" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
 
 -v-
 
-## Roman
+## PLATO
+- ESA project launching early 2027
+- 26$\times$12cm cameras, covering a single 5% of the sky
+- Will be able to find transiting earthlike planets around brighter stars than Kepler
 
 ---
 
 <h2 id="part-4" class="slide-part-title">Part 4: Geometry of a transit</h2>
 
-<img src="Animated_composite_of_2004_Venus_transit_images_pillars.gif" class="r-stretch" />
+<div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/Animated_composite_of_2004_Venus_transit_images_pillars.gif" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
 
 -v-
 
-## Depth
+## Orbits
+
+- <span class="fragment">Orbital distance (or semi-major axis) related to period through **Kepler's third law** ($P^2 \propto a^3$)</span>
+- <span class="fragment">Typically close-in planets have circular orbits (or very close to)</span>
+- <span class="fragment">Some planets orbits in elliptical orbits ($b = a(1-e)$ where $a$ & $b$ are semi-major and -minor axes and $e$ is **eccentricity**)</span>
+- <span class="fragment">The Sun is found at the ellipse's **focus** (Kepler's first law).</span>
+- <span class="fragment">Angle from observer to perihelion defined as $\omega$ (**argument of periastron**).</span>
+
+-v-
+
+## Orbits
+<div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/Eccentric_planets.gif" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
+- <span class="fragment">Both distance & velocity change along orbit according to Kepler's second law (constant area swept).</span>
+
+-v-
+
+## Transit depth
 
 <div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/TransitGeometryP0.png" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
 
@@ -179,9 +208,18 @@
 
 -v-
 
-## Transit duration ()
+## Transit duration (derived)
 
 <div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/TransitGeometryP3.png" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
+
+-v-
+
+## Transit duration (eccentricity)
+
+- <span class="fragment">The above assumed a circular orbit</span>
+- <span class="fragment">Eccentric orbits have variable angular velocities, potentially changing the transit duration significantly</span>
+  - <span class="fragment">TIC 241249530 b is a good example - transit duration is 2.2hrs implying a $<2$d orbit...</span>
+  - <span class="fragment">True period is actually 167d (eccentricity of 0.94!)</span>
 
 -v-
 
@@ -227,22 +265,51 @@
 
 <h2 id="part-5" class="slide-part-title">Part 5: False Positives</h2>
 
+- Not all dips are due to exoplanets!
+
+-v-
+
+## False Positive - low-mass binaries
+
 <div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/exoplanet-mass-radius-all.png" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
+
+- <span class="fragment">Low-mass eclipsing binaries can create Jupiter-like transit depths</span>
+
+-v-
+
+## False Positives
+
+<div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/Transit_FP_BEBs.png" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
+
+- <span class="fragment">Diluted binaries are a problem for all transit depths</span>
+- <span class="fragment">These can be around distant background stars, or close-by binary companions</span>
 
 ---
 
 <h2 id="part-6" class="slide-part-title">Part 6: Exoplanet detection</h2>
 
-Exoplanets are (usually) extremely periodic. Therefore searches typically iterate through period/frequency space.
+<div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/Periodic_Transits.png" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
+- Exoplanets are (usually) extremely periodic. Therefore searches typically iterate through period/frequency space.
 
 -v-
 
 ## Packages for exoplanet detection
 
-- bls (e.g. [astropy.timeseries](https://docs.astropy.org/en/stable/timeseries/bls.html); see also [lightkurve docs](https://lightkurve.github.io/lightkurve/tutorials/3-science-examples/exoplanets-identifying-transiting-planet-signals.html))
-- [GerBLS](https://gerbls.readthedocs.io/en/latest/) - 10-20x faster implementation of BLS
-- [transitleastsquares](https://transitleastsquares.readthedocs.io/en/latest/) - includes transit shape in search
-- [Nuance](https://nuance.readthedocs.io/en/latest/) - models both transits and trends/activity
+- `Box least squared` - BLS
+  - <span class="fragment">Extremely simple grid search looking at "boxcar" filter</span>
+  - <span class="fragment">Implemented in [astropy.timeseries](https://docs.astropy.org/en/stable/timeseries/bls.html); and [lightkurve docs](https://lightkurve.github.io/lightkurve/tutorials/3-science-examples/exoplanets-identifying-transiting-planet-signals.html))</span>
+
+<div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/BLS_params.png" style="height: 250px;" /></div>
+
+-v-
+
+## Packages for exoplanet detection
+
+- <span class="fragment">[GerBLS](https://gerbls.readthedocs.io/en/latest/) - 10-20x faster implementation of BLS</span>
+- <span class="fragment">[transitleastsquares](https://transitleastsquares.readthedocs.io/en/latest/) - includes transit shape in search</span>
+- <span class="fragment">[Nuance](https://nuance.readthedocs.io/en/latest/)* - models both transits and trends/activity</span>
+- <span class="fragment">[CETRA](https://github.com/leigh2/cetra)* - simultaneous transit + trend fitting (CUDA only)</span>
+  - <span class="fragment">$^{\rm *}$ - can also search for single transits</span>
 
 ---
 
@@ -253,27 +320,27 @@ Exoplanets are (usually) extremely periodic. Therefore searches typically iterat
 <div style="text-align: center; width: 100%;"><img src="../slide_data/slide_images/ActivityTESS.png" style="max-height: 450px; max-width: 100%; object-fit: contain; display: block; margin: 0 auto;" /></div>
 
 - Stars are not constant in flux.
-- We need to account for this variation, by filtering/subtracting it, or co-fitting it.
+- <span class="fragment">We need to account for this variation, by filtering/subtracting it, or co-fitting it.</span>
 
 -v-
 
 ## Modelling stellar noise
 - Common approaches:
-  * **Filtering** (e.g. Savitsky-Golay, or median filter, implemented with e.g. astropy.timeseries or scipy.signal or wotan)
-  * **Spline** (e.g. cubic bspline, implemented using e.g. scipy.interpolate)
-  * **Local polynomials** around transits
-  * **Gaussian Processes** (e.g. SHO, implemented with e.g. celerite or tinyGP)
-- But removing variability can change transit depth/shape!
-- Best to *mask* identified transits while filtering, or co-fit variability with transit model
+  * <span class="fragment">**Filtering** (e.g. Savitsky-Golay, or median filter, implemented with e.g. `astropy.timeseries` or `scipy.signal` or [`wotan`](https://wotan.readthedocs.io/en/stable/))</span>
+  * <span class="fragment">**Splines** (e.g. cubic bspline, implemented using e.g. `scipy.interpolate`)</span>
+  * <span class="fragment">**Local polynomials** around transits</span>
+  * <span class="fragment">**Gaussian Processes** (e.g. SHO, implemented with e.g. [`celerite2`](https://celerite2.readthedocs.io/en/latest/index.html) or [`tinyGP`](https://tinygp.readthedocs.io/en/latest/index.html))</span>
+- <span class="fragment">But removing variability can change transit depth/shape!</span>
+- <span class="fragment">Best to *mask* identified transits while filtering, or co-fit variability with transit model</span>
 
 -v-
 
 ## Modelling stellar noise - GPs
 
-- A way to parameterise correlations with time (e.g. non- or quasi-periodic variability)
-- Covariance: the influence of past & future data on each point
-- Kernel: the mathematical function governing how each point is influenced by past/future data.
-- Hyperparameters: variable parameters governing the kernel (i.e. amplitude, timescale, etc)
+- <span class="fragment">A way to parameterise correlations with time (e.g. non- or quasi-periodic variability)</span>
+- <span class="fragment">Covariance: the influence of past & future data on each point</span>
+- <span class="fragment">Kernel: the mathematical function governing how each point is influenced by past/future data.</span>
+- <span class="fragment">Hyperparameters: variable parameters governing the kernel (i.e. amplitude, timescale, etc)</span>
 
 -v-
 
@@ -287,10 +354,13 @@ Exoplanets are (usually) extremely periodic. Therefore searches typically iterat
 
 <h2 id="part-8" class="slide-part-title">Part 8: Accessing Data</h2>
 
-# Accessing photometric data
+## Web-based
+- <span class="fragment">NASA's [MAST portal](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html) displays all available data products for a star</span>
 
-lightkurve
-
+## Within python
+- <span class="fragment">The `lightkurve` package retrieves a table of observations within python, e.g.:`lk.search_lightcurve("LHS 1140", mission="TESS", author="SPOC", exptime=120)`</span>
+  - <span class="fragment">`lightkurve` is also a neat way to interact/plot/detrend/etc lightcurves!</span>
+- <span class="fragment">`astroquery` can also do similar, via e.g. `Observations.query_object("LHS 1140")`</span>
 
 ---
 
@@ -303,60 +373,64 @@ lightkurve
 - Radius ratio $R_p/R_s$
 - Impact parameter $b$
 - Limb darkening
-
-#### Occasionally important:
-- Eccentricity $e$ & argument of periasteron $\omega$
+- <span class="fragment">Eccentricity $e$ & argument of periasteron $\omega$ (occasionally)</span>
 
 -v-
 
 ## Packages for exoplanet transit modelling
-- [AllesFitter](https://www.allesfitter.com/) - Includes a GUI
-- [Exoplanet](https://docs.exoplanet.codes/en/latest/) - Python class-based. Interfaced with PyMC (HMC sampling)
-- [Juliet](https://juliet.readthedocs.io/en/latest/) - Script-based (YAML). Includes nested sampling.
-- [Batman](https://github.com/lkreidberg/batman) - Simple pythonic transit model.
-- [Pytransit](https://pytransit.readthedocs.io/en/latest/index.html) - Fast fortran back-end. Not very intuitive.
+- <span class="fragment">[AllesFitter](https://www.allesfitter.com/) - Includes a GUI</span>
+- <span class="fragment">[Exoplanet](https://docs.exoplanet.codes/en/latest/) - Python class-based. Interfaced with PyMC (HMC sampling)</span>
+- <span class="fragment">[Juliet](https://juliet.readthedocs.io/en/latest/) - Script-based (YAML). Includes nested sampling.</span>
+- <span class="fragment">[Batman](https://github.com/lkreidberg/batman) - Simple pythonic transit model.</span>
+- <span class="fragment">[Pytransit](https://pytransit.readthedocs.io/en/latest/index.html) - Fast fortran back-end. Not very intuitive.</span>
 
 ---
 
-# Project ideas!
+<h2 id="part-10" class="slide-part-title">Part 10: Projects</h2>
 
-1) Do Neptunes with 10<P<30d host any (undetected) close-in super-Earths?
-2) Which TESS candidates also have archival K2 data, and does this confirm/reveal anything new?
-3) Does TESS data reveal anything new about K2 or CoRoT candidates? Are parameters derived from TESS consistent?
-3) Are the impact parameters of planets in multi-planet systems trend with distance due to mutual inclination? (NB avoid "compact" multis with TTVs)?
-4) How does derived Limb Darkening parameters vary with stellar temperature for the brightest ~10 hot jupiters observed by TESS?
-5) Does recent TESS data for TOIs with $P>250$d (or nan) in the Southern hemisphere help constrain their true periods
-6) Can you fit a transit model to the secondary eclipses of ultra-hot jupiters (e.g. KELT-9), and what does this tell you about the planet?
+### Goal
+
+- <span class="fragment">Play with some data!</span>
+- <span class="fragment">Find something new & interesting</span>
+- <span class="fragment">Make some pretty plots</span>
+- <span class="fragment">Share this with the class</span>
+
+-v-
+
+### Useful Resources
+
+- <span class="fragment">[MAST Portal](https://mast.stsci.edu/portal/Mashup/Clients/Mast/Portal.html)</span>
+  - <span class="fragment">To search TESS input catalogue for stars: *Data Category->MAST Catalogs-> TESS Input v8.2*</span>
+- <span class="fragment">The [NASA exoplanet archive](https://exoplanetarchive.ipac.caltech.edu/); esp `tran_flag=1`, and `tic_id`</span>
+- <span class="fragment">The [TESS Object of Interest (TOI) Catalogue](https://exofop.ipac.caltech.edu/tess/view_toi.php); all of TESS' planet candidates</span>
+  - <span class="fragment">Can remove identified false positives, e.g.: `valid_toi_ix = (~np.isin(toi['TESS Disposition'],['EB','IS','V','FP']))&(toi['TESS Disposition']!='FP')`</span>
+  - <span class="fragment">Some planets have empty or incorrect periods as they were discovered in one or two transits (TOIs with $P>300$d are likely max periods)</span>
+- <span class="fragment">[ExoFop-TESS](https://exofop.ipac.caltech.edu/tess/) - compiled information about every TIC and follow-up campaigns</span>
+- <span class="fragment">[TESS Extractor](https://www.tessextractor.app/) - quick online tool for extracting lightcurves</span>
+
+-v-
+
+### Possible project ideas
+
+1. <span class="fragment">Do Neptunes ($2<R_p<5 R_\oplus$) with 10<P<30d host any (undetected) close-in super-Earths?</span>
+2. <span class="fragment">Which TESS candidates also have archival K2 data, and does this confirm/reveal anything new?</span>
+3. <span class="fragment">Does TESS data reveal anything new about K2 (or CoRoT) unconfirmed candidates? Are parameters derived from TESS consistent?</span>
+4. <span class="fragment">Are the impact parameters of planets in multi-planet systems trend with distance due to mutual inclination? (NB avoid "compact" multis with TTVs)?</span>
+5. <span class="fragment">How does fitted Limb Darkening parameters vary with stellar temperature for the brightest ~10 hot jupiters observed by TESS?</span>
+6. <span class="fragment">Does recent TESS data for TOIs with $P>250$d (or $P={\rm nan}$) (e.g. in the Southern hemisphere) help constrain their true periods?</span>
+7. <span class="fragment">Can you fit a transit model to the secondary eclipses of ultra-hot jupiters (e.g. KELT-9), and what does this tell you about the planet?</span>
 
 -v-
 
 ### Some constraints
-- TTVs mean fitting simple transit models to compact multi-planet systems (i.e. with period ratios <2.25x) fails.
-- It's probably not worth simply searching random stars for new planets, as all the "easy" candidates have been found.
-  - But it's much more likely to find additional planets in systems with already-detected existing planets
-
-<!--
-## Other complications
-
--v- 
-
-Transit timing variations
-
--v- 
-
-Spot-crossing events
+  - <span class="fragment">*Transit timing variations (TTVs)* from interactions between planets close-to or in resonant orbits (e.g. 5.4 & 10.8d) make fitting simple transit models impossible.</span>
+    - <span class="fragment">Avoid compact multi-planet systems (i.e. with period ratios <2.25x).</span>
+- <span class="fragment">It's probably not worth simply searching random stars for new planets, as all the "easy" candidates have been found.</span>
+  - <span class="fragment">But it's much more likely to find additional planets in systems with already-detected existing planets</span>
 
 -v-
 
-Stellar contamination
-
--v-
-
-Atmospheric transmission
-
----
-
-## How to model exoplanet transits-->
+# Good luck!
                     </textarea>
                 </section>
             </div>

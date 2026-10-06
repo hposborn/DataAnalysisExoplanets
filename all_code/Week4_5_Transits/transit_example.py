@@ -26,6 +26,7 @@ print(f"Downloaded {len(lc_collection)} sector(s).")
 # ==============================================================================
 
 lc_collection.stitch().plot()
+plt.show()
 
 # %%
 
@@ -186,14 +187,113 @@ plt.show()
 phase2 = ((t2 - t0_2 + 0.5 * p2) % p2) - 0.5 * p2
 mask_zoom2 = np.abs(phase2) < 0.2
 
+# Helper for binning raw phase data
+def bin_phase_data(ph, y, bin_width=0.005):
+    bins = np.arange(np.min(ph), np.max(ph) + bin_width, bin_width)
+    idx = np.digitize(ph, bins)
+    bph = [np.mean(ph[idx == i]) for i in range(1, len(bins)) if np.sum(idx == i) > 0]
+    by = [np.mean(y[idx == i]) for i in range(1, len(bins)) if np.sum(idx == i) > 0]
+    return np.array(bph), np.array(by)
+
+
 plt.figure(figsize=(8, 4))
-plt.plot(phase2[mask_zoom2], f2[mask_zoom2], 'k.', alpha=0.2, label='120s Data')
+fig, axes = plt.subplots(1, 2, figsize=(10, 2.2 * num_sectors), sharey=True)
 lc_pass2_binned = lc_flat_pass2.fold(period=p2, epoch_time=t0_2).bin(time_bin_size=600*u.s)
-plt.plot(lc_pass2_binned.time.value, lc_pass2_binned.flux.value, 'bo', ms=4, label='Binned')
-plt.xlabel("Time from Mid-Transit [days]")
-plt.ylabel("Flattened Flux")
 plt.title("Pass 2: Phase-Folded Transit Zoom")
-plt.xlim(-0.2, 0.2)
+
+# Plotting identified phase-folded transit
+axes[0].plot(phase2[mask_zoom2], f2[mask_zoom2], 'k.', alpha=0.2, label='120s Data')
+binphase2=bin_phase_data(phase2[mask_zoom2], f2[mask_zoom2])
+axes[0].plot(binphase2[0], binphase2[1], 'bo', ms=4, label='Binned')
+axes[0].set_xlabel("Time from Mid-Transit [days]")
+axes[0].set_ylabel("Flattened Flux")
+
+# And "secondary" transit at phase=0.5 - this should be _flat_ if period is correct.
+phase2_secondary = ((t2 - t0_2) % p2) - 0.5 * p2
+mask_zoom2sec=np.abs(phase2_secondary) < 0.2
+binphase2sec=bin_phase_data(phase2_secondary[mask_zoom2sec], f2[mask_zoom2sec])
+axes[1].plot(phase2_secondary[mask_zoom2sec], f2[mask_zoom2sec], 'k.', alpha=0.2, label='120s Data')
+axes[1].plot(binphase2sec[0], binphase2sec[1], 'bo', ms=4, label='Binned')
+axes[1].set_xlabel("Time from Mid-Transit [days]")
+
+axes[0].set_xlim(-0.2, 0.2)
+axes[1].set_xlim(-0.2, 0.2)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# %%
+# ==============================================================================
+# Let's try the same search using GPs and nuance
+# ==============================================================================
+
+from tinygp import kernels, GaussianProcess
+import jax
+from nuance import linear_search, periodic_search, core
+
+lcs_masked=[]
+for lc in lc_clean_list:
+    # 1. Identify in-transit points of Planet 1 using Astropy's transit_mask()
+    in_tr1 = bls1.transit_mask(lc.time.value, period=p1, duration=1.1*dur1, transit_time=t0_1)
+    lcs_masked.append(lc[~in_tr1])
+lcs_masked=lk.LightCurveCollection(lcs_masked).stitch().remove_outliers(sigma=4)
+
+# ------------------------------------------------------------------------------
+# Define Gaussian Process (GP) Noise Model using tinygp
+# ------------------------------------------------------------------------------
+# M-dwarf variability is typically modeled using a Matérn 3/2 or SHO kernel
+# Setting SHO kernel with ~2d time scaling (should not be too close to transit duration)
+kernel = kernels.quasisep.SHO(omega=2*np.pi/2, quality=1/np.sqrt(2)) * np.var(lcs_masked.flux.value)
+gp = GaussianProcess(kernel, lcs_masked.time.value, diag=lcs_masked.flux_err.value**2)
+
+# %%
+# ------------------------------------------------------------------------------
+# Nuance Linear Search (Epochs & Durations Grid)
+# ------------------------------------------------------------------------------
+# Epochs (evaluated across light curve duration)
+epochs = lcs_masked.time.value[::2].copy()
+
+# LHS 1140 c transit duration is ~0.04 to 0.08 days (~1 to 2 hours)
+durations = np.linspace(0.033, 0.1, 5)
+
+# Run linear transit search using nuance
+print("Running linear search...")
+ls = linear_search(lcs_masked.time.value, lcs_masked.flux.value, gp=gp)(epochs, durations)
+
+# %%
+# ------------------------------------------------------------------------------
+# Nuance Periodic Search (Orbital Period Search)
+# ------------------------------------------------------------------------------
+# Search grid around LHS 1140 c's period (~3.777 days)
+periods = np.linspace(1, 10.0, 12000)
+
+print("Running periodic search...")
+snr_function = jax.jit(core.snr(lcs_masked.time.value, lcs_masked.flux.value, gp=gp))
+ps_function = periodic_search(epochs, durations, ls, snr_function)
+
+snr, params = ps_function(periods)
+
+# Extract best-fit candidate parameters
+best_idx = np.argmax(snr)
+best_snr = snr[best_idx]
+best_t0, best_D, best_P = params[best_idx]
+
+print(f"\n--- Best Fit Candidate ---")
+print(f"Period (P):    {best_P:.5f} days")
+print(f"Epoch (T0):    {best_t0:.5f}")
+print(f"Duration (D):  {best_D * 24 * 60:.1f} minutes")
+print(f"Signal-to-Noise: {best_snr:.2f}")
+
+# %%
+# ------------------------------------------------------------------------------
+# Plot the Transit Search Periodogram
+# ------------------------------------------------------------------------------
+plt.figure(figsize=(9, 4), dpi=100)
+plt.plot(periods, snr, color='black', lw=1)
+plt.axvline(best_P, color='red', linestyle='--', label=f'Best P = {best_P:.4f} d')
+plt.xlabel("Period [days]")
+plt.ylabel("Transit SNR")
+plt.title("nuance Periodogram — LHS 1140 c Transit Search")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -239,8 +339,7 @@ def log_likelihood(params, time, flux, yerr):
     """
     k, t0, p, a, b, u1, u2 = params
     # Convert inclination from degrees to radians for PyTransit
-    inc_rad = inc_rad = np.arccos(b / a)
-
+    inc_rad = np.arccos(b / a)
     # Evaluate PyTransit model
     try:
         model_flux = tm.evaluate(
@@ -280,7 +379,7 @@ initial_guess = [
     t0_1,     # t0
     p1,       # period [days]
     96.0,     # a/Rs
-    0.5,      # b
+    0.25,      # b
     0.1,      # u1
     0.3       # u2
 ]
@@ -315,7 +414,7 @@ print(f"  k (Rp/Rs)   : {best_params[0]:.5f}")
 print(f"  t0          : {best_params[1]:.5f}")
 print(f"  Period      : {best_params[2]:.5f}")
 print(f"  a/Rs        : {best_params[3]:.3f}")
-print(f"  Inclination : {best_params[4]:.3f} deg")
+print(f"  b           : {best_params[4]:.3f}")
 print(f"  u1, u2      : {best_params[5]:.3f}, {best_params[6]:.3f}")
 
 # %%
@@ -326,7 +425,7 @@ best_model = tm.evaluate(
     t0=best_params[1],
     p=best_params[2],
     a=best_params[3],
-    i=np.radians(best_params[4])
+    i=np.arccos(best_params[4]/best_params[3])
 )
 
 # Phase fold around primary planet transit (P2 / T0_2)
@@ -339,14 +438,6 @@ ferr_data = lc_final.flux_err.value[transit_window]
 
 sort_idx = np.argsort(t_data)
 t_data, f_data, ferr_data = t_data[sort_idx], f_data[sort_idx], ferr_data[sort_idx]
-
-# Helper for binning raw phase data
-def bin_phase_data(x, y, bin_width=0.005):
-    bins = np.arange(np.min(x), np.max(x) + bin_width, bin_width)
-    idx = np.digitize(x, bins)
-    bx = [np.mean(x[idx == i]) for i in range(1, len(bins)) if np.sum(idx == i) > 0]
-    by = [np.mean(y[idx == i]) for i in range(1, len(bins)) if np.sum(idx == i) > 0]
-    return np.array(bx), np.array(by)
 
 bin_t, bin_f = bin_phase_data(t_data, f_data, bin_width=0.006)
 import matplotlib.pyplot as plt
@@ -428,14 +519,13 @@ flat_samples = sampler.get_chain(flat=True)
 print(f"\nSuccessfully collected {flat_samples.shape[0]} posterior samples.")
 print("\n--- Parameter Posterior Estimates (Median +/- 1-Sigma) ---")
 
-labels = ["k (Rp/Rs)", "t0", "Period [d]", "a/Rs", "Inc [deg]", "u1", "u2"]
+labels = ["k (Rp/Rs)", "t0", "Period [d]", "a/Rs", "b", "u1", "u2"]
 results_summary = {}
 for i in range(ndim):
     mcmc = np.percentile(flat_samples[:, i], [16, 50, 84])
     q = np.diff(mcmc)
     results_summary[labels[i]] = mcmc[1]
     print(f"{labels[i]:12s}: {mcmc[1]:.6f} (+{q[1]:.6f} / -{q[0]:.6f})")
-
 
 # ------------------------------------------------------------------------------
 # Visualizing Corner Plot & Best-Fit Model
@@ -449,34 +539,119 @@ fig = corner.corner(
     title_kwargs={"fontsize": 10}
 )
 plt.show()
+
 # %%
-# Generate model comparison using posterior samples
-plt.figure(figsize=(9, 4.5))
-plt.errorbar(time_data, flux_data, yerr=err_data, fmt=".k", alpha=0.15, label="Data")
+import numpy as np
+import matplotlib.pyplot as plt
 
-# Draw 100 random posterior light curves to plot uncertainty band
-inds = np.random.randint(len(flat_samples), size=100)
-for ind in inds:
-    sample = flat_samples[ind]
-    sample_model = tm.evaluate(
-        k=sample[0],
-        ldc=[sample[5], sample[6]],
-        t0=sample[1],
-        p=sample[2],
-        a=sample[3],
-        i=np.radians(sample[4])
+# ------------------------------------------------------------------------------
+# 1. Compute Median and 16th/84th Percentile Models from Posteriors
+# ------------------------------------------------------------------------------
+# High-density evaluation grid (relative phase centered at 0)
+t_smooth = np.linspace(-0.2, 0.2, 1000)
+
+# Set the smooth grid length on PyTransit ONCE
+tm.set_data(t_smooth)
+
+n_draws = 300
+sample_indices = np.random.choice(len(flat_samples), size=n_draws, replace=False)
+model_draws = np.zeros((n_draws, len(t_smooth)))
+
+for idx, sample_idx in enumerate(sample_indices):
+    # Extract parameters: [k, t0, p, a, b, u1, u2]
+    k_s, t0_s, p_s, a_s, b_s, u1_s, u2_s = flat_samples[sample_idx]
+
+    # Calculate inclination safely (clip to ensure ratio <= 1.0)
+    cos_i = np.clip(b_s / a_s, 0.0, 1.0)
+    inc_rad = np.arccos(cos_i)
+
+    # IMPORTANT: We pass (t_smooth + t0_s) as the internal evaluation phase
+    # so that PyTransit centers the transit at t_smooth = 0
+    model_draws[idx] = tm.evaluate(
+        k=k_s,
+        ldc=[u1_s, u2_s],
+        t0=0.0,
+        p=p_s,
+        a=a_s,
+        i=inc_rad
     )
-    plt.plot(time_data, sample_model, "r-", alpha=0.03)
 
-# Best-fit median curve
-best_k, best_t0, best_p, best_a, best_inc, best_u1, best_u2 = [results_summary[lbl] for lbl in labels]
-median_model = tm.evaluate(
-    k=best_k, ldc=[best_u1, best_u2], t0=best_t0, p=best_p, a=best_a, i=np.radians(best_inc)
+# Compute 16th, 50th (median), and 84th percentiles across posterior draws
+median_model = np.percentile(model_draws, 50, axis=0)
+lower_1sigma = np.percentile(model_draws, 16, axis=0)
+upper_1sigma = np.percentile(model_draws, 84, axis=0)
+
+# Compute median posterior parameters
+median_params = np.percentile(flat_samples, 50, axis=0)
+
+
+# ------------------------------------------------------------------------------
+# 2. Phase-Fold Data using Median Posteriors
+# ------------------------------------------------------------------------------
+med_t0 = median_params[1]
+med_p  = median_params[2]
+
+# Phase fold data around median T0 and Period
+phase_final = ((lc_final.time.value - med_t0 + 0.5 * med_p) % med_p) - 0.5 * med_p
+transit_window = np.abs(phase_final) < 0.2
+
+t_data = phase_final[transit_window]
+f_data = lc_final.flux.value[transit_window]
+ferr_data = lc_final.flux_err.value[transit_window]
+
+sort_idx = np.argsort(t_data)
+t_data, f_data, ferr_data = t_data[sort_idx], f_data[sort_idx], ferr_data[sort_idx]
+
+
+# ------------------------------------------------------------------------------
+# 3. Bin Phase Data & Plot
+# ------------------------------------------------------------------------------
+def bin_phase_data(x, y, bin_width=0.005):
+    bins = np.arange(np.min(x), np.max(x) + bin_width, bin_width)
+    idx = np.digitize(x, bins)
+    bx = [np.mean(x[idx == i]) for i in range(1, len(bins)) if np.sum(idx == i) > 0]
+    by = [np.mean(y[idx == i]) for i in range(1, len(bins)) if np.sum(idx == i) > 0]
+    return np.array(bx), np.array(by)
+
+bin_t, bin_f = bin_phase_data(t_data, f_data, bin_width=0.006)
+
+plt.figure(figsize=(9, 4.5), dpi=100)
+
+# Plot raw and binned data
+plt.errorbar(t_data, f_data, yerr=ferr_data, fmt='.k', alpha=0.15, label='Data', zorder=1)
+plt.plot(bin_t, bin_f, 'o', color='crimson', ms=4, alpha=0.9, label='Binned Data', zorder=2)
+
+# Plot ±1-sigma uncertainty band
+plt.fill_between(
+    t_smooth,
+    lower_1sigma,
+    upper_1sigma,
+    color='red',
+    alpha=0.35,
+    label=r'$\pm 1\sigma$ Posterior Uncertainty',
+    zorder=3
 )
 
-plt.plot(time_data, median_model, "r-", lw=2, label="MCMC Median Fit")
-plt.xlabel("Time / Phase [days]")
+# Plot median transit model
+plt.plot(t_smooth, median_model, 'r-', lw=2, label='PyTransit Median Fit', zorder=4)
+
+plt.xlim(-0.2, 0.2)
+plt.xlabel("Phase / Time relative to $T_0$ [days]")
 plt.ylabel("Normalized Flux")
-plt.legend()
+plt.legend(loc='lower right', frameon=True)
 plt.tight_layout()
 plt.show()
+
+# Re-bind original time array to tm model object for downstream analysis
+tm.set_data(lc_final.time.value)
+
+# %%
+
+# ------------------------------------------------------------------------------
+# Additional things to test your skills
+# ------------------------------------------------------------------------------
+
+# - Model both planets (rather than one)
+# - Perform model comparison between 3.6 and 7.1d periods for planet b
+# - Derive planetary radii and equilibrium temperatures (from radius ratio, period & stellar info)
+# - Try similar for HD114082 (two planets with only two transits)
