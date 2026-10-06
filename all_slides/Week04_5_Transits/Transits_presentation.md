@@ -112,6 +112,16 @@ title:"Project 2 - Exoplanet transits"
 - 26$\times$12cm cameras, covering a single 5% of the sky
 - Will be able to find transiting earthlike planets around brighter stars than Kepler
 
+-v-
+## CHEOPS
+[ifull=Cheops_Key_messages_card_full.jpg]
+-v-
+## CHEOPS
+- Bern-lead ESA mission launched to LEO in 2019; 2nd extension 2027-30
+- Not a transit survey, but instead transit follow-up and characterisation
+- Typically 5-10$\times$ better transit precision than TESS (30cm mirror)
+- I use it to detect long-period Neptune-like planets (like [HD110067](https://www.esa.int/ESA_Multimedia/Images/2023/11/Cheops_unlocks_family_of_six_exoplanets_in_harmonic_rhythm))
+
 ---
 
 [P "Geometry of a transit"]
@@ -144,22 +154,22 @@ title:"Project 2 - Exoplanet transits"
 
 ## Impact parameter
 
-[i=TransitGeometryP1.png]
+[i=TransitGeometryP1.png][+]
 
-- Only exoplanets with specific inclination range can transit their stars
+- Only exoplanets with specific inclination range can transit their stars[+]
 
 -v-
 
 ## Transit duration (chord)
 
-[i=TransitGeometryP2.png]
+[i=TransitGeometryP2.png][+]
 
 
 -v-
 
 ## Transit duration (derived)
 
-[i=TransitGeometryP3.png]
+[i=TransitGeometryP3.png][+]
 
 -v-
 
@@ -167,7 +177,7 @@ title:"Project 2 - Exoplanet transits"
 
 - The above assumed a circular orbit [+]
 - Eccentric orbits have variable angular velocities, potentially changing the transit duration significantly [+]
-  - TIC 241249530 b is a good example - transit duration is 2.2hrs implying a $<2$d orbit...[+]
+  - [TIC 241249530 b](https://www.nature.com/articles/s41586-024-07688-3) is a good example - transit duration is 2.2hrs implying a $<2$d orbit...[+]
   - True period is actually 167d (eccentricity of 0.94!)[+]
 
 -v-
@@ -187,10 +197,10 @@ title:"Project 2 - Exoplanet transits"
 
 ## Limb Darkening
 
-- Multiple "limb darkening laws" parameterises drop in flux $I/I_0$ $\cos{\mu}$
-- Simplest: $\frac{I(\mu)}{I(0)} = 1 - a(1-\mu)$ - the linear law
-- Most common: $\frac{I(\mu)}{I(0)} = 1 - u_1 (1-\mu) - u_2 (1-\mu)^2$ - the quadratic law
-- Theoretical LD parameters exist for most filters from fitting stellar models (e.g. [for TESS](https://www.aanda.org/articles/aa/full_html/2017/04/aa29705-16/aa29705-16.html))
+- Multiple "limb darkening laws" parameterises drop in flux $I/I_0$ $\cos{\mu}$[+]
+- Simplest: $\frac{I(\mu)}{I(0)} = 1 - a(1-\mu)$ - the linear law[+]
+- Most common: $\frac{I(\mu)}{I(0)} = 1 - u_1 (1-\mu) - u_2 (1-\mu)^2$ - the quadratic law[+]
+- Theoretical LD parameters exist for most filters from fitting stellar models (e.g. [for TESS](https://www.aanda.org/articles/aa/full_html/2017/04/aa29705-16/aa29705-16.html))[+]
 
 -v-
 
@@ -203,12 +213,12 @@ title:"Project 2 - Exoplanet transits"
 ## Limb Darkening Approaches
 
 1) Strong priors
-  - Access the pre-computed tables of coefficients for a given bandpass as a function of stellar Teff & logg (Vizier, Claret et al)
-  - Use a wider $\sigma$ than suggested by the table (0.1 & 0.2 for quadratic params $u_1$ & $u_2$, especially for cooler stars [Patel & Espinoza 2022](https://arxiv.org/abs/2203.05661))
+  - Access the pre-computed tables of coefficients for a given bandpass as a function of stellar Teff & logg (Vizier, Claret et al)[+]
+  - Use a wider $\sigma$ than suggested by the table (0.1 & 0.2 for quadratic params $u_1$ & $u_2$, especially for cooler stars [Patel & Espinoza 2022](https://arxiv.org/abs/2203.05661))[+]
 
-2) Uninformative priors
-  - No assumptions using models. However, low-SNR transits will not constrain limb-darkening, and other parameters may be lower-precision. 
-  - In the case of quadratic parameters, reparameterise according to [Kipping 2014](https://arxiv.org/abs/1308.0009)
+2) Uninformative priors[+]
+  - No assumptions using models. However, low-SNR transits will not constrain limb-darkening, and other parameters may be lower-precision. [+]
+  - In the case of quadratic parameters, reparameterise according to [Kipping 2014](https://arxiv.org/abs/1308.0009)[+]
 
 ---
 
@@ -231,14 +241,14 @@ title:"Project 2 - Exoplanet transits"
 [i=Transit_FP_BEBs.png]
 
 - Diluted binaries are a problem for all transit depths[+]
-- These can be around distant background stars, or close-by binary companions[+]
+- Can be around distant background stars, or nearby binary companions[+]
 
 ---
 
 [P "Exoplanet detection"]
 
 [i=Periodic_Transits.png]
-- Exoplanets are (usually) extremely periodic. Therefore searches typically iterate through period/frequency space.
+- Exoplanets are (usually) extremely periodic. Therefore searches typically iterate through period/frequency space.[+]
 
 -v-
 
@@ -246,9 +256,9 @@ title:"Project 2 - Exoplanet transits"
 
 - `Box least squared` - BLS
   - Extremely simple grid search looking at "boxcar" filter[+]
-  - Implemented in [astropy.timeseries](https://docs.astropy.org/en/stable/timeseries/bls.html); and [lightkurve docs](https://lightkurve.github.io/lightkurve/tutorials/3-science-examples/exoplanets-identifying-transiting-planet-signals.html))[+]
+  - Implemented in [astropy.timeseries](https://docs.astropy.org/en/stable/timeseries/bls.html); and [lightkurve docs](https://lightkurve.github.io/lightkurve/tutorials/3-science-examples/exoplanets-identifying-transiting-planet-signals.html)[+]
 
-[ism=BLS_params.png]
+[ism=BLS_params.png][+]
 
 -v-
 
@@ -258,7 +268,7 @@ title:"Project 2 - Exoplanet transits"
 - [transitleastsquares](https://transitleastsquares.readthedocs.io/en/latest/) - includes transit shape in search[+]
 - [Nuance](https://nuance.readthedocs.io/en/latest/)* - models both transits and trends/activity[+]
 - [CETRA](https://github.com/leigh2/cetra)* - simultaneous transit + trend fitting (CUDA only)[+]
-  - $^{\rm *}$ - can also search for single transits[+]
+  - **$^{\rm *}$ - can also search for single transits**[+]
 
 ---
 
@@ -267,18 +277,17 @@ title:"Project 2 - Exoplanet transits"
 ## Stellar noise
 
 [i=ActivityTESS.png]
-
-- Stars are not constant in flux.
-- We need to account for this variation, by filtering/subtracting it, or co-fitting it.[+]
-
 -v-
 
 ## Modelling stellar noise
+- Stars are not constant in flux.
+- We need to account for this variation, by filtering/subtracting it, or co-fitting it.[+]
+
 - Common approaches:
   * **Filtering** (e.g. Savitsky-Golay, or median filter, implemented with e.g. `astropy.timeseries` or `scipy.signal` or [`wotan`](https://wotan.readthedocs.io/en/stable/))[+]
   * **Splines** (e.g. cubic bspline, implemented using e.g. `scipy.interpolate`)[+]
   * **Local polynomials** around transits[+]
-  * **Gaussian Processes** (e.g. SHO, implemented with e.g. [`celerite2`](https://celerite2.readthedocs.io/en/latest/index.html) or [`tinyGP`](https://tinygp.readthedocs.io/en/latest/index.html))[+]
+  * **Gaussian Processes** (GPs, e.g. SHO, implemented with e.g. [`celerite2`](https://celerite2.readthedocs.io/en/latest/index.html) or [`tinyGP`](https://tinygp.readthedocs.io/en/latest/index.html))[+]
 - But removing variability can change transit depth/shape![+]
 - Best to *mask* identified transits while filtering, or co-fit variability with transit model[+]
 
@@ -321,7 +330,8 @@ title:"Project 2 - Exoplanet transits"
 - Transit time $t_0$
 - Radius ratio $R_p/R_s$
 - Impact parameter $b$
-- Limb darkening
+- Limb darkening coefficients (e.g. $u_1$ & $u_2$ for quadratic). 
+  - Could be reparameterised via [Kipping 2014](https://arxiv.org/abs/1308.0009)[+]
 - Eccentricity $e$ & argument of periasteron $\omega$ (occasionally) [+]
 
 -v-
@@ -329,8 +339,9 @@ title:"Project 2 - Exoplanet transits"
 ## Packages for exoplanet transit modelling
 - [AllesFitter](https://www.allesfitter.com/) - Includes a GUI[+]
 - [Exoplanet](https://docs.exoplanet.codes/en/latest/) - Python class-based. Interfaced with PyMC (HMC sampling)[+]
+- [Jaxoplanet](https://jax.exoplanet.codes/en/latest/) - Developed from `exoplanet` but in super-fast Jax (but still in development)[+]
 - [Juliet](https://juliet.readthedocs.io/en/latest/) - Script-based (YAML). Includes nested sampling.[+]
-- [Batman](https://github.com/lkreidberg/batman) - Simple pythonic transit model.[+]
+- [Batman](https://github.com/lkreidberg/batman) - Simple pythonic transit model. Potential `cython` dependency issues.[+]
 - [Pytransit](https://pytransit.readthedocs.io/en/latest/index.html) - Fast fortran back-end. Not very intuitive.[+]
 
 ---
@@ -340,6 +351,7 @@ title:"Project 2 - Exoplanet transits"
 ### Goal
 
 - Play with some data! [+]
+  - Particularly doing transit detection and fitting with space-based transit survey data (Kepler, K2, TESS, etc)[+]
 - Find something new & interesting[+]
 - Make some pretty plots[+]
 - Share this with the class[+]
@@ -371,9 +383,10 @@ title:"Project 2 - Exoplanet transits"
 
 -v-
 
-### Some constraints
-  - *Transit timing variations (TTVs)* from interactions between planets close-to or in resonant orbits (e.g. 5.4 & 10.8d) make fitting simple transit models impossible. [+]
-    - Avoid compact multi-planet systems (i.e. with period ratios <2.25x).[+]
+### Some warnings
+- Kepler produced a lot of data (4 years), and therefore can be very slow. K2/TESS better (excepting TESS 20s data).[+]
+- *Transit timing variations (TTVs)* from interactions between planets close-to or in resonant orbits (e.g. 5.4 & 10.8d) make fitting simple transit models impossible. [+]
+  - Avoid compact multi-planet systems (i.e. with period ratios <2.25x).[+]
 - It's probably not worth simply searching random stars for new planets, as all the "easy" candidates have been found.[+]
   - But it's much more likely to find additional planets in systems with already-detected existing planets[+]
 
