@@ -126,7 +126,7 @@ title:"Project 2 - Exoplanet transits"
 
 [P "Geometry of a transit"]
 
-[i="Animated_composite_of_2004_Venus_transit_images_pillars.gif"]
+[i=Animated_composite_of_2004_Venus_transit_images_pillars.gif]
 
 -v-
 
