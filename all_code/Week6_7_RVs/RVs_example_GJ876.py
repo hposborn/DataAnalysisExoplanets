@@ -45,6 +45,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats, optimize
 from astropy.timeseries import LombScargle
+from jaxoplanet.core.kepler import kepler
 
 from RVs_functions import *
 
@@ -63,10 +64,10 @@ KIPPING_A, KIPPING_B = 0.867, 3.03       # Kipping (2013) Beta prior on eccentri
 TIME_WINDOW = None                       # e.g. (55000, 58000) in RJD to limit the baseline
 
 # Switches for the slow parts
-RUN_RADVEL_MCMC = True
+RUN_RADVEL_MCMC = False
 RUN_JAXOPLANET = True
 RUN_DYNESTY = True
-RUN_XO_COMPARISON = True
+RUN_JX_COMPARISON = True
 RUN_KIMA = True
 
 OUTDIR = Path("gj876_outputs")
@@ -614,99 +615,50 @@ if RUN_RADVEL_MCMC:
     except ImportError:
         print("Install 'corner' for corner plots")
 
+
 # %%
 #######################
-# EXOPLANET (PYMC) MODEL BUILDER
+# JAXOPLANET + NUMPYRO MODEL
 #######################
-import pymc as pm
-import pytensor.tensor as pt
-import arviz as az
-import exoplanet as xo
-
-
-def build_xo_model(df, guesses, offsets):
-    """
-    Same physical model as radvel. Note: exoplanet's omega refers to the planet's
-    orbit and differs from radvel's (stellar) omega by pi.
-    """
-    n = len(guesses)
-    idx, names = inst_codes(df)
-    tref = np.median(df["t"])
-    tt = df["t"].to_numpy() - tref
-    y, e = df["rv"].to_numpy(), df["err"].to_numpy()
-    P0 = np.array([g["P"] for g in guesses])
-    tc0 = np.array([g["tc"] for g in guesses]) - tref
-    K0 = np.array([max(g["K"], 2.0) for g in guesses])
-
-    with pm.Model() as model:
-        logP = pm.Normal("logP", mu=np.log(P0), sigma=0.02, shape=n)
-        P = pm.Deterministic("P", pt.exp(logP))
-        tc = pm.Normal("tc", mu=tc0, sigma=P0 / 4, shape=n)
-        logK = pm.Uniform("logK", lower=-2, upper=np.log(1000), initval=np.log(K0), shape=n)
-        K = pm.Deterministic("K", pt.exp(logK))
-
-        ecs = pm.Uniform("ecs", lower=-1, upper=1, shape=(2, n), initval=0.1 * np.ones((2, n)))
-        ecc = pm.Deterministic("ecc", pt.sum(ecs**2, axis=0))
-        omega = pm.Deterministic("omega", pt.arctan2(ecs[1], ecs[0]))
-        pm.Potential("unit_disk", pt.switch(pt.all(pt.lt(ecc, 1.0-1e-9)), 1e-9, -np.inf))
-        # Kipping (2013) prior; equivalently xo.eccentricity.kipping13("ecc_prior", fixed=True, observed=ecc)
-        pm.Potential("kipping", pm.logp(pm.Beta.dist(alpha=KIPPING_A, beta=KIPPING_B),
-                                        pt.clip(ecc, 1e-8, 1 - 1e-8)).sum())
-
-        gamma = pm.Normal("gamma", mu=np.array([offsets[nm] for nm in names]), sigma=100, shape=len(names))
-        log_jit = pm.Normal("log_jit", mu=np.log(2.0), sigma=2.0, shape=len(names))
-
-        orbit = xo.orbits.KeplerianOrbit(period=P, t0=tc, ecc=ecc, omega=omega)
-        rv_planets = orbit.get_radial_velocity(tt, K=K)
-        pm.Deterministic("rv_planets", rv_planets)
-        mu = pt.sum(rv_planets, axis=-1) + gamma[idx]
-        sigma = pt.sqrt(e**2 + pt.exp(2 * log_jit)[idx])
-        pm.Normal("obs", mu=mu, sigma=sigma, observed=y)
-    return model
-
-
-def sample_xo(model, draws=1500, tune=1500, chains=4):
-    with model:
-        map_soln = pm.find_MAP(progressbar=False)
-        names = [v.name for v in model.value_vars]
-        init = {k: v for k, v in map_soln.items() if k in names}
-        idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=min(chains, os.cpu_count() or 1),
-                          target_accept=0.95, initvals=init, random_seed=42,
-                          idata_kwargs={"log_likelihood": True})
-    return map_soln, idata
-
+# jaxoplanet provides a fast, differentiable Kepler solver written in JAX; numpyro
+# provides the probabilistic model and the NUTS (Hamiltonian Monte Carlo) sampler.
+# The RV model uses the same conventions as radvel (time of conjunction tc and the
+# argument of periastron of the star's orbit), so the two fits can be compared directly.
+import numpyro
+numpyro.set_host_device_count(4)          # lets the 4 chains run in parallel; must precede JAX use
+numpyro.enable_x64()                      # double precision: needed for precise periods over decades
+import jax
+import jax.numpy as jnp
+import numpyro.distributions as dist
+from numpyro.infer import MCMC, NUTS, init_to_value
+from jaxoplanet.orbits.keplerian import Central, System
 
 # %%
 #######################
 # JAXOPLANET FIT AND POSTERIOR SAMPLING
 #######################
 if RUN_JAXOPLANET:
-    jx_args, jx_init, jx_tref = jx_inputs(df, guesses, offsets_guess)
-    jx_map_soln = jx_map(jx_args, jx_init)
-    print("MAP periods:", jx_map_soln["P"], " K:", jx_map_soln["K"], " e:", jx_map_soln["ecc"])
-
-    jx_mcmc = jx_sample(jx_args, jx_map_soln)
-    jx_mcmc.print_summary(exclude_deterministic=False)
-    jx_samples = {k: np.asarray(v) for k, v in jx_mcmc.get_samples().items()}
+    jx_mcmc, jx_args, jx_tref = run_jaxoplanet(df, guesses, offsets_guess)
+    jx_mcmc.print_summary()
+    jx = {k: np.asarray(v) for k, v in jx_mcmc.get_samples().items()}
 
     # Posteriors of the main parameters
     fig, axes = plt.subplots(3, len(guesses), figsize=(4.5 * len(guesses), 7), squeeze=False)
     for j in range(len(guesses)):
         for row, name in enumerate(["P", "K", "ecc"]):
-            axes[row, j].hist(jx_samples[name][:, j], bins=50, histtype="step")
+            axes[row, j].hist(jx[name][:, j], bins=50, histtype="step")
             axes[row, j].set_xlabel(f"{name} (planet {j + 1})")
     fig.tight_layout()
     plt.show()
 
-    # Phase-folded plot per planet using the MAP solution
+    # Phase-folded plot per planet, using the posterior median of each quantity
     idx, names = inst_codes(df)
     t_rel = df["t"].to_numpy() - jx_tref
-    rv_pl = np.asarray(keplerian_rv(jnp.asarray(t_rel), jx_map_soln["P"], jx_map_soln["tc"],
-                                    jx_map_soln["ecc"], jx_map_soln["omega"], jx_map_soln["K"]))
-    base = df["rv"].to_numpy() - jx_map_soln["gamma"][idx]
+    rv_pl = np.median(jx["rv_planets"], axis=0)
+    base = df["rv"].to_numpy() - np.median(jx["gamma"], axis=0)[idx]
     fig, axes = plt.subplots(1, len(guesses), figsize=(5 * len(guesses), 3.5), squeeze=False)
     for j, ax in enumerate(axes[0]):
-        Pj, tcj = float(jx_map_soln["P"][j]), float(jx_map_soln["tc"][j])
+        Pj, tcj = np.median(jx["P"][:, j]), np.median(jx["tc"][:, j])
         ph = ((t_rel - tcj) / Pj + 0.5) % 1 - 0.5
         order = np.argsort(ph)
         ax.errorbar(ph, base - (rv_pl.sum(axis=0) - rv_pl[j]), df["err"], fmt="o", ms=2.5, alpha=0.6)
@@ -716,6 +668,7 @@ if RUN_JAXOPLANET:
     axes[0, 0].set_ylabel("RV [m/s]")
     fig.tight_layout()
     plt.show()
+
 
 
 # %%
@@ -870,17 +823,25 @@ if RUN_DYNESTY:
 # WAIC estimates how well each model would predict new data (elpd: expected log
 # predictive density), penalising models that overfit. It is computed from the
 # pointwise log-likelihood of every posterior sample.
+
+# %%
+#######################
+# WAIC WITH JAXOPLANET POSTERIORS
+#######################
+# WAIC estimates how well each model would predict new data (elpd: expected log
+# predictive density), penalising models that overfit. It is computed from the
+# pointwise log-likelihood of every posterior sample.
 if RUN_JX_COMPARISON:
     for n_pl, (gs, offs) in model_guesses.items():
         print(f"Sampling {n_pl}-planet jaxoplanet model...")
-        cmp_args, cmp_init, _ = jx_inputs(df, gs, offs)
-        cmp_mcmc = jx_sample(cmp_args, jx_map(cmp_args, cmp_init), draws=1000, tune=1000)
+        cmp_mcmc, cmp_args, _ = run_jaxoplanet(df, gs, offs, draws=1000, tune=1000)
         elpd, se = waic(cmp_mcmc, cmp_args)
         comp_tab.loc[n_pl, "elpd_waic"] = elpd
         comp_tab.loc[n_pl, "waic_se"] = se
     comp_tab["d_elpd_vs_prev"] = comp_tab["elpd_waic"].diff()
     print(comp_tab[["elpd_waic", "waic_se", "d_elpd_vs_prev"]].round(2))
     print("Higher elpd_waic is better; a gain of several times the SE favours the larger model.")
+
 
 
 # %%
@@ -962,6 +923,15 @@ if RUN_KIMA:
         except Exception:
             pass
 
+
+# %%
+#######################
+# PLOTTING KIMA OUTPUTS
+#######################
+
+
+
+#
 # %%
 #######################
 # DISCUSSION PROMPTS FOR STUDENTS

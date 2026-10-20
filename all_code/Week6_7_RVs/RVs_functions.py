@@ -73,8 +73,65 @@ def jx_inputs(df, guesses, offsets):
     return args, init, tref
 
 
+def keplerian_rv(t, P, tc, ecc, omega, K):
+    """RV of each planet, shape (n_planets, n_times). Same parameterisation as radvel."""
+    from jaxoplanet.core.kepler import kepler
+    import jax.numpy as jnp
+    P, tc, ecc, omega, K = (jnp.atleast_1d(x)[:, None] for x in (P, tc, ecc, omega, K))
+    # time of periastron from the time of conjunction (true anomaly pi/2 - omega)
+    f_c = jnp.pi / 2 - omega
+    E_c = 2 * jnp.arctan2(jnp.sqrt(1 - ecc) * jnp.sin(f_c / 2), jnp.sqrt(1 + ecc) * jnp.cos(f_c / 2))
+    tp = tc - P / (2 * jnp.pi) * (E_c - ecc * jnp.sin(E_c))
+    M = jnp.mod(2 * jnp.pi * (t[None, :] - tp) / P, 2 * jnp.pi)
+    sinf, cosf = kepler(M, jnp.broadcast_to(ecc, M.shape))
+    return K * (cosf * jnp.cos(omega) - sinf * jnp.sin(omega) + ecc * jnp.cos(omega))
+
+def rv_model(t, y, err, idx, n_inst, P0, tc0, K0, gamma0):
+    """
+    Priors: narrow log-normal on P around the periodogram peak, wide on tc, log-uniform K.
+    Eccentricity: the Kipping (2013) Beta(0.867, 3.03) prior, sampled directly.
+    omega: from an unconstrained 2D vector (avoids the 0/2pi wrap-around that hurts NUTS).
+    """
+    import numpyro
+    import numpyro.distributions as dist
+    import jax.numpy as jnp
+    from jaxoplanet.orbits.keplerian import Central, System
+    KIPPING_A, KIPPING_B = 0.867, 3.03
+    n = len(P0)
+    # Priors: narrow around the periodogram period, broad on tc and K
+    logP = numpyro.sample("logP", dist.Normal(jnp.log(P0), 0.02))
+    P = numpyro.deterministic("P", jnp.exp(logP))
+    tc = numpyro.sample("tc", dist.Normal(tc0, P0 / 4))
+    logK = numpyro.sample("logK", dist.Uniform(-2.0, jnp.log(1000.0)).expand([n]))
+    K = numpyro.deterministic("K", jnp.exp(logK))
+    # Kipping (2013) eccentricity prior
+    ecc = numpyro.sample("ecc", dist.Beta(KIPPING_A, KIPPING_B).expand([n]))
+    # omega from a 2D vector, which avoids the wrap-around at +-pi that troubles NUTS
+    w_vec = numpyro.sample("w_vec", dist.Normal(0.0, 1.0).expand([2, n]))
+    omega = numpyro.deterministic("omega", jnp.arctan2(w_vec[1], w_vec[0]))
+    # One offset and one jitter per instrument
+    gamma = numpyro.sample("gamma", dist.Normal(gamma0, 100.0))
+    log_jit = numpyro.sample("log_jit", dist.Normal(jnp.log(2.0), 2.0).expand([n_inst]))
+
+    # The planetary system
+    system = System(Central())
+    for i in range(n):
+        system = system.add_body(period=P[i], time_transit=tc[i], eccentricity=ecc[i],
+                                 omega_peri=omega[i], radial_velocity_semiamplitude=K[i])
+    rv_planets = numpyro.deterministic("rv_planets", system.radial_velocity(t))  # (n_planets, n_times)
+
+    mu = rv_planets.sum(axis=0) + gamma[idx]
+    sigma = jnp.sqrt(err**2 + jnp.exp(2 * log_jit)[idx])
+    numpyro.sample("obs", dist.Normal(mu, sigma), obs=y)
+
+
 def jx_map(args, init, seed=0):
     """MAP: minimise the negative log posterior with L-BFGS, using JAX gradients."""
+    from numpyro.infer.util import initialize_model
+    from jax.flatten_util import ravel_pytree
+    import jax
+    import jax.numpy as jnp
+    from scipy import optimize
     info = initialize_model(jax.random.PRNGKey(seed), rv_model, model_args=args,
                             init_strategy=init_to_value(values=init))
     x0, unravel = ravel_pytree(info.param_info.z)
@@ -87,6 +144,8 @@ def jx_map(args, init, seed=0):
 
 
 def jx_sample(args, init_values, draws=1500, tune=1500, chains=4, seed=42):
+    import jax
+    from numpyro.infer import MCMC, NUTS, init_to_value
     sample_sites = ["logP", "tc", "logK", "ecc", "w_vec", "gamma", "log_jit"]
     kernel = NUTS(rv_model, target_accept_prob=0.95,
                   init_strategy=init_to_value(values={k: init_values[k] for k in sample_sites}))
@@ -95,6 +154,34 @@ def jx_sample(args, init_values, draws=1500, tune=1500, chains=4, seed=42):
     mcmc.run(jax.random.PRNGKey(seed), *args)
     return mcmc
 
+
+def run_jaxoplanet(df, guesses, offsets, draws=1500, tune=1500, chains=4):
+    """Sample the model with NUTS, starting from the periodogram guesses."""
+    from numpyro.infer import MCMC, NUTS, init_to_value
+    import jax
+    idx, names = inst_codes(df)
+    tref = np.median(df["t"])                 # times relative to the middle of the data
+    P0 = np.array([g["P"] for g in guesses])
+    tc0 = np.array([g["tc"] for g in guesses]) - tref
+    K0 = np.array([max(g["K"], 2.0) for g in guesses])
+    gamma0 = np.array([offsets[nm] for nm in names])
+    args = (df["t"].to_numpy() - tref, df["rv"].to_numpy(), df["err"].to_numpy(),
+            idx, len(names), P0, tc0, K0, gamma0)
+    start = dict(logP=np.log(P0), tc=tc0, logK=np.log(K0), ecc=np.full(len(P0), 0.05),
+                 w_vec=np.vstack([np.ones(len(P0)), np.zeros(len(P0))]),
+                 gamma=gamma0, log_jit=np.full(len(names), np.log(2.0)))
+    mcmc = MCMC(NUTS(rv_model, target_accept_prob=0.95, init_strategy=init_to_value(values=start)),
+                num_warmup=tune, num_samples=draws, num_chains=chains, chain_method="parallel")
+    mcmc.run(jax.random.PRNGKey(42), *args)
+    return mcmc, args, tref
+
+def waic(mcmc, args):
+    """WAIC (elpd and its standard error) from the pointwise log-likelihood of the samples."""
+    import numpyro
+    ll = np.asarray(numpyro.infer.log_likelihood(rv_model, mcmc.get_samples(), *args)["obs"])
+    lppd_i = np.logaddexp.reduce(ll, axis=0) - np.log(ll.shape[0])
+    elpd_i = lppd_i - ll.var(axis=0, ddof=1)
+    return elpd_i.sum(), np.sqrt(len(elpd_i) * elpd_i.var())
 
 def freq_grid(t, pmin=12, pmax=3000, ofac=10):
     T = np.ptp(t)
