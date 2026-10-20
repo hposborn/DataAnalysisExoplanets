@@ -85,7 +85,7 @@ $\Delta v = c/R = 3e8/1.5e5 = 2000 m/s$[+]
 
 ---
 
-[P "Extracting Readial velocities"]
+[P "Extracting Radial velocities"]
 
 ### Marcy & Butler (Hamilton) approach
 
@@ -101,7 +101,7 @@ $\Delta v = c/R = 3e8/1.5e5 = 2000 m/s$[+]
 
 [ism=NIRPSSpectre_FP.jpg]
 
-- : Observe source simultaneously (or close in time) to:[+]
+- Observe source simultaneously (or close in time) to:[+]
   - Local lamp producing sharp emission lines of known wavelength (of Uranium, Thorium-Argon, Iodine, etc)[+]
   - Fabry-Perot (or laser frequency comb); must be calibrated nightly to emission lamp lines. Often simultaneously observed.[+]
 
@@ -180,7 +180,7 @@ In more detail, we can derive it more completely:
 ### Improvement over time:
 
 <img src="../slide_data/slide_images/m_stad2381fig1.jpeg" class="r-stretch" />
-[Burt et al](https://arxiv.org/html/2511.01954v1)
+- From [Burt et al](https://arxiv.org/html/2511.01954v1)
 
 -v- 
 
@@ -200,14 +200,37 @@ $K=60\,\rm{m}.\rm{s}^{-1}$
 
 ## Detecting RV planets
 
-Keplerians are **periodic**, so typically found by searching in frequency space, e.g.:[+]
-- [Lomb Scargle](https://iopscience.iop.org/article/10.3847/1538-4365/aab766)[+]
-- [Generalised LS](https://arxiv.org/abs/1412.0467)[+]
-- [L1 periodogram](https://github.com/nathanchara/l1periodogram)[+]
+- Keplerians are **periodic**, so typically found by searching in frequency space, e.g.:[+]
+  - [Lomb Scargle](https://iopscience.iop.org/article/10.3847/1538-4365/aab766)[+]
+  - [Generalised LS](https://arxiv.org/abs/1412.0467) - performs better for gappy data.[+]
+  - [L1 periodogram](https://github.com/nathanchara/l1periodogram) - searches for sums of sinusoids (less aliases for multi-planet systems).[+]
+
+- **Harmonics** in e.g. periodograms are very common:[+]
+  - Near 1 day ($1±1/p$) due to nightly observations[+]
+  - Near synodic period of the moon (29.5d), especially for _bright-time_ instruments[+]
+  - Near 1 year (and 1/2, 2/3, etc)[+]
+- For multi-planet signals, you likely need to remove the influence of planet b to detect planet c.[+]
 
 -v-
 
 <img src="../slide_data/slide_images/periodograms_sm.png" class="r-stretch" />
+
+-v-
+
+### Signal strength
+
+- Various metrics used to assess strength of RV signal:[+]
+- **Normalised $\Chi^2$** - used in standard LS[+]
+- **FAP - False Alarm Probability**:[+]
+  - Computed from noise (assumed Gaussian/white) in the periodogram[+]
+  - Typical threshold of <0.01 denotes a strong signal[+]
+- **Marginal posterior probability density** - used by BGLS:[+]
+  - The probability of a signal at a given period[+]
+  - Relative difference of 4.6 between peaks implies $e^{4.6}=100\times$ larger probability[+]
+- Bayes Factor (Evidence ratio / log evidence difference):[+]
+  - Used by e.g. kima[+]
+  - Typically Bayes Factor $>20$ (log Evidence ratio$>3$) is the standard for detection[+]
+  - $3<BF<20$ ($0.5<\logZ<3$) shows a positive signal/tentative evidence[+]
 
 ---
 
@@ -237,25 +260,13 @@ Keplerians are **periodic**, so typically found by searching in frequency space,
 
 [P "Modelling considerations"]
 
-- Each instrument has a different RV zero-point[+]
+- Each instrument has a different RV zero-point (or offset)[+]
   - Instruments may also have internal offsets due to changes in environmental conditions/reduction pipeline/etc.[+]
   - Some (e.g. template-matching) are fixed as median=0.0[+]
   - Others have offsets of 10-100m/s due to e.g. PSF shape, etc.[+]
   - So, for datasets with multiple observations, you need to model an offset parameter for each dataset[+]
 - Long-term trends (e.g. due to binary stellar companion) can be modelled as a **polynomial** trend[+]
 - For long-duration signals (e.g. P>8d), multiple RVs from one night can be averaged together[+]
-
--v-
-
-### Modelling RVs
-
-- Radial velocities act _across all data_ (unlike transits which are short duration events)
-  - Different planetary signals (and different observation strategies) can complicate detection[+]
-- **Harmonics** in e.g. periodograms are very common:[+]
-  - Near 1 day ($1±1/p$) due to nightly observations[+]
-  - Near synodic period of the moon (29.5d), especially for _bright-time_ instruments[+]
-  - Near 1 year (and 1/2, 2/3, etc)[+]
-- For multi-planet signals, you likely need to remove the influence of planet b to detect planet c[+]
 
 -v-
 
@@ -273,7 +284,7 @@ Keplerians are **periodic**, so typically found by searching in frequency space,
 
 - Unlike for all-sky surveys, RVs require targetting specific stars, often with private observatories[+]
 - The process of reducing extremely large raw detector images to precise RVs is often complex/resource-intensive, and even if raw data is available reduced RVs may not be.[+]
-- Thus open access RV data is unfortunately rare[+]
+- Thus open access RV data is (unfortunately) rare[+]
 - Exceptions are:[+]
   - Data from historical European Southern Observatory spectrographs e.g. HARPS, ESPRESSO, CORALIE (accessible on [DACE](https://dace.unige.ch/spectroscopyDatabase/?))[+]
   - Data published in publications (many also uploaded to DACE)[+]
@@ -290,15 +301,15 @@ http://cdsweb.u-strasbg.fr/cgi-bin/qcat?J/A+A/), [spectra from SOPHIE](http://at
   1. **Higher precision** echelle spectra (e.g. HARPS, CORALIE, SOPHIE)[+]
   2. **Large-amplitude signals** (e.g. Giant planets $0.2<M_p<10 M_{\rm Jup}$)[+]
 - A reasonable project might study:[+]
-  - One star with hundreds (or thousands) or RVs in detail [+]
-  - A handful of stars with similar properties looking at trends[+]
+  - One star with hundreds (or thousands) or RVs in detail (e.g. multiple planets, activity, etc)[+]
+  - A handful of stars with "easy" detections, and looking at trends[+]
 
 ---
 
 [P "Project ideas"]
 
 ### General advice
-- [DACE](https://dace.unige.ch/spectroscopyDatabase/?) hosts the best collection of RV data and has API/python module[+]
+- [DACE](https://dace.unige.ch/spectroscopyDatabase/?) hosts the best collection of RV data and has API/python module[+]20x 
 - Exploring what planets have data on DACE is not so simple (may be able to download archive)[+]
 - While DACE does offer interactive RV fitting tools, activity detrending, etc...[+]
 - It is best to download the RVs and use `kima`, `pyorbit`, `radvel`, etc.[+]

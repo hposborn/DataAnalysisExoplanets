@@ -56,6 +56,46 @@ def linear_fit(df, periods=(), jitter=0.0, y=None):
     return dict(model=model, resid=y - model, offsets=offsets, sines=sines, t0=t0)
 
 
+
+def jx_inputs(df, guesses, offsets):
+    """Model arguments (times relative to the median) and starting values from the guesses."""
+    idx, names = inst_codes(df)
+    tref = np.median(df["t"])
+    P0 = np.array([g["P"] for g in guesses])
+    tc0 = np.array([g["tc"] for g in guesses]) - tref
+    K0 = np.array([max(g["K"], 2.0) for g in guesses])
+    gamma0 = np.array([offsets[nm] for nm in names])
+    args = (df["t"].to_numpy() - tref, df["rv"].to_numpy(), df["err"].to_numpy(),
+            idx, len(names), P0, tc0, K0, gamma0)
+    init = dict(logP=np.log(P0), tc=tc0, logK=np.log(K0), ecc=np.full(len(P0), 0.05),
+                w_vec=np.vstack([np.ones(len(P0)), np.zeros(len(P0))]),
+                gamma=gamma0, log_jit=np.full(len(names), np.log(2.0)))
+    return args, init, tref
+
+
+def jx_map(args, init, seed=0):
+    """MAP: minimise the negative log posterior with L-BFGS, using JAX gradients."""
+    info = initialize_model(jax.random.PRNGKey(seed), rv_model, model_args=args,
+                            init_strategy=init_to_value(values=init))
+    x0, unravel = ravel_pytree(info.param_info.z)
+    nlp = jax.jit(lambda x: info.potential_fn(unravel(x)))
+    grad = jax.jit(jax.grad(lambda x: info.potential_fn(unravel(x))))
+    res = optimize.minimize(lambda x: float(nlp(x)), np.asarray(x0),
+                            jac=lambda x: np.asarray(grad(x)), method="L-BFGS-B")
+    map_soln = info.postprocess_fn(unravel(jnp.asarray(res.x)))
+    return {k: np.asarray(v) for k, v in map_soln.items()}
+
+
+def jx_sample(args, init_values, draws=1500, tune=1500, chains=4, seed=42):
+    sample_sites = ["logP", "tc", "logK", "ecc", "w_vec", "gamma", "log_jit"]
+    kernel = NUTS(rv_model, target_accept_prob=0.95,
+                  init_strategy=init_to_value(values={k: init_values[k] for k in sample_sites}))
+    mcmc = MCMC(kernel, num_warmup=tune, num_samples=draws, num_chains=chains,
+                chain_method="parallel", progress_bar=True)
+    mcmc.run(jax.random.PRNGKey(seed), *args)
+    return mcmc
+
+
 def freq_grid(t, pmin=12, pmax=3000, ofac=10):
     T = np.ptp(t)
     return np.arange(1.0 / pmax, 1.0 / pmin, 1.0 / (ofac * T))

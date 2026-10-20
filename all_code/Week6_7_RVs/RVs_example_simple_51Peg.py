@@ -17,7 +17,6 @@ Steps
 
 Install (with uv; use Python 3.11 or 3.12)
     uv add dace-query numpy pandas matplotlib radvel kima
-    uv add "bgls @ git+https://github.com/jvines/BayesianGLS"
 """
 
 # %%
@@ -31,6 +30,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import optimize
+
+from RVs_functions import *
 
 STAR = "HD217014"        # 51 Peg; try "51Peg" if DACE does not recognise this name
 HOME_DIR = Path.cwd()   # kima changes folder while running; we come back here
@@ -116,25 +117,23 @@ ax.legend()
 plt.show()
 
 # %%
+
+# %%
 #######################
 # BGLS PERIODOGRAM OF THE RVS
 #######################
-# The Bayesian Generalised Lomb-Scargle periodogram (Mortier et al. 2015) gives the
-# relative probability of a sinusoid at each period. The highest peak is our candidate.
-from bgls import bayesian_generalized_lomb_scargle
-
+# The highest peak of the BGLS periodogram is our first planet candidate.
 PMIN, PMAX = 1.1, np.ptp(t)
-periods, prob = bgls.bayesian_generalized_lomb_scargle(t, rv_centered, err, plow=PMIN, phigh=PMAX, ofac=10)
-periods, prob = np.asarray(periods), np.asarray(prob)
+periods, log_prob = bgls(t, rv_centered, err, PMIN, PMAX)
 
-P1 = periods[np.argmax(prob)]
+P1 = periods[np.argmax(log_prob)]
 print(f"Highest BGLS peak: P = {P1:.4f} days")
 
 fig, ax = plt.subplots(figsize=(10, 4))
-ax.plot(periods, np.log10(prob / prob.max()), lw=0.8)
+ax.plot(periods, log_prob / np.log(10), lw=0.8)        # convert ln to log10
 ax.axvline(P1, color="r", ls="--", alpha=0.5)
 ax.set_xscale("log")
-ax.set_ylim(-20, 1)
+ax.set_ylim(-50, 1)
 ax.set_xlabel("Period [days]")
 ax.set_ylabel("log10 relative probability")
 ax.set_title("BGLS periodogram of the RVs")
@@ -251,14 +250,13 @@ plt.show()
 #######################
 # BGLS PERIODOGRAM OF THE RESIDUALS
 #######################
-periods_r, prob_r = bgls.bgls(res_t, res_rv, res_err, plow=PMIN, phigh=PMAX, ofac=10)
-periods_r, prob_r = np.asarray(periods_r), np.asarray(prob_r)
+periods_r, log_prob_r = bgls(res_t, res_rv, res_err, 10, 6000)
 
-P2 = periods_r[np.argmax(prob_r)]
+P2 = periods_r[np.argmax(log_prob_r)]
 print(f"Highest peak in the residuals: P = {P2:.4f} days")
 
 fig, ax = plt.subplots(figsize=(10, 4))
-ax.plot(periods_r, np.log10(prob_r / prob_r.max()), lw=0.8)
+ax.plot(periods_r, log_prob_r / np.log(10), lw=0.8)
 ax.axvline(P2, color="r", ls="--", alpha=0.5, label=f"{P2:.2f} d")
 ax.axvline(P_fit, color="gray", ls=":", label="planet b")
 ax.set_xscale("log")
@@ -268,6 +266,7 @@ ax.set_ylabel("log10 relative probability")
 ax.set_title("BGLS periodogram of the residuals")
 ax.legend()
 plt.show()
+
 # Questions: is the peak as dominant as in the first periodogram? Is it near 1 day, a year,
 # or the length of the data set? Those suggest aliases, seasonal or instrumental effects.
 
@@ -328,6 +327,7 @@ print(post2)
 #######################
 # PLOT THE 2-PLANET FIT (EACH SIGNAL PHASE-FOLDED)
 #######################
+
 rv_minus_gamma = rv - df["inst"].map({i: post2.params["gamma_" + i].value for i in insts}).to_numpy()
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 for n, ax in zip([1, 2], axes):
@@ -367,8 +367,14 @@ print(f"Delta BIC (2 - 1) = {BIC2 - BIC1:.2f}")
 #######################
 # kima works on its own and does not use anything from radvel: it explores all
 # parameters (periods included) over wide priors and computes the Bayesian evidence Z.
+#
+# Each instrument is shifted to a median of zero before it goes to kima. DACE RVs can be
+# absolute velocities (tens of km/s) with zero points differing by kilometres per second
+# between instruments. kima's default offset priors then span that whole range, and a
+# 56 m/s planet is easily missed while offsets, or long-period 'planets' imitating them,
+# absorb the differences. After centring, every offset is within a few tens of m/s of 0.
 import kima
-from kima import RVData, RVmodel
+from kima import RVData, RVmodel, distributions
 
 kima_dir = (OUTDIR / "kima").resolve()
 kima_dir.mkdir(exist_ok=True)
@@ -376,9 +382,27 @@ data_files = []
 for inst in insts:
     m = (df["inst"] == inst).to_numpy()
     filename = kima_dir / f"{inst}.txt"
-    np.savetxt(filename, np.column_stack([t[m], rv[m], err[m]]), fmt="%.6f")
+    rv_shifted = rv[m] - np.median(rv[m])
+    np.savetxt(filename, np.column_stack([t[m], rv_shifted, err[m]]), fmt="%.6f")
+    print(f"{inst:12s}: subtracted median {np.median(rv[m]):12.2f} m/s")
     data_files.append(str(filename))
 data = RVData(data_files, units="ms", skip=0)
+
+# %%
+#######################
+# KIMA: PRIORS
+#######################
+# Because the data are centred, the systemic velocity and the instrument offsets only need
+# to cover +-OFFSET_RANGE m/s. Keep the range comfortably wider than the planet's K so the
+# prior does not force offsets that hide part of the signal. kima measures the offsets
+# relative to one reference instrument, so there is one fewer offset than instruments.
+# The period prior stops at the time span of the data: longer 'periods' are unconstrained
+# and are an easy way for the sampler to imitate offsets.
+OFFSET_RANGE = 100.0   # m/s
+KIMA_C_PRIOR = distributions.Uniform(-OFFSET_RANGE, OFFSET_RANGE)
+KIMA_OFFSET_PRIORS = [distributions.Uniform(-OFFSET_RANGE, OFFSET_RANGE)] * (len(insts) - 1)
+KIMA_P_PRIOR = distributions.LogUniform(1.0, np.ptp(t))
+KIMA_K_PRIOR = distributions.ModifiedLogUniform(1.0, 500.0)
 
 # %%
 #######################
@@ -386,9 +410,16 @@ data = RVData(data_files, units="ms", skip=0)
 #######################
 # fix=True with npmax=1 means 'exactly one planet'. Each run writes its output files
 # into the current folder, so each model gets its own folder.
-KIMA_STEPS = 20000   # increase for a more precise evidence
+KIMA_STEPS = 50000   # too few steps is another reason kima can miss a planet
 
 kima_model_1 = RVmodel(fix=True, npmax=1, data=data)
+kima_model_1.Cprior = KIMA_C_PRIOR
+if hasattr(kima_model_1, "individual_offset_prior"):
+    kima_model_1.individual_offset_prior = KIMA_OFFSET_PRIORS
+else:
+    kima_model_1.offsets_prior = KIMA_OFFSET_PRIORS[0]
+kima_model_1.conditional.Pprior = KIMA_P_PRIOR
+kima_model_1.conditional.Kprior = KIMA_K_PRIOR
 run_dir_1 = kima_dir / "one_planet"
 run_dir_1.mkdir(exist_ok=True)
 os.chdir(run_dir_1)
@@ -401,6 +432,13 @@ os.chdir(HOME_DIR)
 # KIMA: RUN WITH EXACTLY 2 PLANETS
 #######################
 kima_model_2 = RVmodel(fix=True, npmax=2, data=data)
+kima_model_2.Cprior = KIMA_C_PRIOR
+if hasattr(kima_model_2, "individual_offset_prior"):
+    kima_model_2.individual_offset_prior = KIMA_OFFSET_PRIORS
+else:
+    kima_model_2.offsets_prior = KIMA_OFFSET_PRIORS[0]
+kima_model_2.conditional.Pprior = KIMA_P_PRIOR
+kima_model_2.conditional.Kprior = KIMA_K_PRIOR
 run_dir_2 = kima_dir / "two_planets"
 run_dir_2.mkdir(exist_ok=True)
 os.chdir(run_dir_2)
@@ -422,9 +460,45 @@ print(f"kima ln Z (1 planet)  = {lnZ1:.2f}")
 print(f"kima ln Z (2 planets) = {lnZ2:.2f}")
 print(f"ln Bayes factor (2 vs 1) = {lnZ2 - lnZ1:.2f}")
 
-# Look at what kima found for the periods in the 2-planet run
-kima_results_2.plot_posterior_period()
-plt.show()
+# Look at what kima found for the periods in the 2-planet run.
+# The name of this plotting method differs between kima versions, so try the usual ones
+# and otherwise list the plotting methods your version has.
+for method_name in ["plot_posterior_period", "plot2"]:
+    if hasattr(kima_results_2, method_name):
+        getattr(kima_results_2, method_name)()
+        plt.show()
+        break
+else:
+    print("Plotting methods in this kima version:",
+          [m for m in dir(kima_results_2) if m.startswith("plot")])
+
+# %%
+#######################
+# KIMA: PHASE-FOLDED SIGNALS OF THE BEST SOLUTION
+#######################
+# Take the posterior sample with the highest likelihood from each kima run and let kima
+# draw each planet's signal folded on its period (the other planet removed). Compare
+# these with the radvel plots above: kima found its solution without any starting guess.
+# Method names differ between kima versions, so the code tries the common ones.
+for label, results in [("1 planet", kima_results_1), ("2 planets", kima_results_2)]:
+    # Best (maximum-likelihood) posterior sample
+    if hasattr(results, "maximum_likelihood_sample"):
+        try:
+            best_sample = results.maximum_likelihood_sample(printit=False)
+        except TypeError:
+            best_sample = results.maximum_likelihood_sample()
+    else:
+        best_sample = results.posterior_sample[np.argmax(results.posterior_lnlike[:, 1])]
+
+    # Phase-folded plot of that sample
+    if hasattr(results, "phase_plot"):
+        results.phase_plot(best_sample)
+        plt.suptitle(f"kima, {label}: maximum-likelihood solution")
+        plt.show()
+    else:
+        print("No phase_plot in this kima version. Plotting methods available:",
+              [m for m in dir(results) if "plot" in m])
+        break
 
 # %%
 #######################

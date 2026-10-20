@@ -64,7 +64,7 @@ TIME_WINDOW = None                       # e.g. (55000, 58000) in RJD to limit t
 
 # Switches for the slow parts
 RUN_RADVEL_MCMC = True
-RUN_EXOPLANET = True
+RUN_JAXOPLANET = True
 RUN_DYNESTY = True
 RUN_XO_COMPARISON = True
 RUN_KIMA = True
@@ -678,34 +678,45 @@ def sample_xo(model, draws=1500, tune=1500, chains=4):
 
 # %%
 #######################
-# EXOPLANET FIT AND POSTERIOR SAMPLING
+# JAXOPLANET FIT AND POSTERIOR SAMPLING
 #######################
-if RUN_EXOPLANET:
-    xo_model = build_xo_model(df, guesses, offsets_guess)
-    xo_map, xo_idata = sample_xo(xo_model)
-    print(az.summary(xo_idata, var_names=["P", "K", "ecc", "omega", "tc", "gamma", "log_jit"]))
-    az.plot_trace(xo_idata, var_names=["P", "K", "ecc"])
-    plt.tight_layout()
+if RUN_JAXOPLANET:
+    jx_args, jx_init, jx_tref = jx_inputs(df, guesses, offsets_guess)
+    jx_map_soln = jx_map(jx_args, jx_init)
+    print("MAP periods:", jx_map_soln["P"], " K:", jx_map_soln["K"], " e:", jx_map_soln["ecc"])
+
+    jx_mcmc = jx_sample(jx_args, jx_map_soln)
+    jx_mcmc.print_summary(exclude_deterministic=False)
+    jx_samples = {k: np.asarray(v) for k, v in jx_mcmc.get_samples().items()}
+
+    # Posteriors of the main parameters
+    fig, axes = plt.subplots(3, len(guesses), figsize=(4.5 * len(guesses), 7), squeeze=False)
+    for j in range(len(guesses)):
+        for row, name in enumerate(["P", "K", "ecc"]):
+            axes[row, j].hist(jx_samples[name][:, j], bins=50, histtype="step")
+            axes[row, j].set_xlabel(f"{name} (planet {j + 1})")
+    fig.tight_layout()
     plt.show()
 
     # Phase-folded plot per planet using the MAP solution
     idx, names = inst_codes(df)
-    tref = np.median(df["t"])
-    rvp = np.asarray(xo_map["rv_planets"])
-    base = df["rv"].to_numpy() - np.asarray(xo_map["gamma"])[idx]
+    t_rel = df["t"].to_numpy() - jx_tref
+    rv_pl = np.asarray(keplerian_rv(jnp.asarray(t_rel), jx_map_soln["P"], jx_map_soln["tc"],
+                                    jx_map_soln["ecc"], jx_map_soln["omega"], jx_map_soln["K"]))
+    base = df["rv"].to_numpy() - jx_map_soln["gamma"][idx]
     fig, axes = plt.subplots(1, len(guesses), figsize=(5 * len(guesses), 3.5), squeeze=False)
     for j, ax in enumerate(axes[0]):
-        others = rvp.sum(axis=1) - rvp[:, j]
-        Pj, tcj = float(xo_map["P"][j]), float(xo_map["tc"][j]) + tref
-        ph = ((df["t"] - tcj) / Pj + 0.5) % 1 - 0.5
-        ax.errorbar(ph, base - others, df["err"], fmt="o", ms=2.5, alpha=0.6)
-        order = np.argsort(ph.to_numpy())
-        ax.plot(ph.to_numpy()[order], rvp[order, j], "k-")
+        Pj, tcj = float(jx_map_soln["P"][j]), float(jx_map_soln["tc"][j])
+        ph = ((t_rel - tcj) / Pj + 0.5) % 1 - 0.5
+        order = np.argsort(ph)
+        ax.errorbar(ph, base - (rv_pl.sum(axis=0) - rv_pl[j]), df["err"], fmt="o", ms=2.5, alpha=0.6)
+        ax.plot(ph[order], rv_pl[j][order], "k-")
         ax.set_title(f"P = {Pj:.3f} d")
         ax.set_xlabel("Phase")
     axes[0, 0].set_ylabel("RV [m/s]")
     fig.tight_layout()
     plt.show()
+
 
 # %%
 #######################
@@ -851,20 +862,26 @@ if RUN_DYNESTY:
     comp_tab["dlnZ_vs_prev"] = comp_tab["lnZ"].diff()
     print("dlnZ > 5 (Bayes factor > ~150) is strong evidence (Trotta 2008).")
 
+
 # %%
 #######################
-# WAIC WITH EXOPLANET POSTERIORS (ARVIZ)
+# WAIC WITH JAXOPLANET POSTERIORS
 #######################
-if RUN_XO_COMPARISON:
-    idatas = {}
+# WAIC estimates how well each model would predict new data (elpd: expected log
+# predictive density), penalising models that overfit. It is computed from the
+# pointwise log-likelihood of every posterior sample.
+if RUN_JX_COMPARISON:
     for n_pl, (gs, offs) in model_guesses.items():
-        print(f"Sampling {n_pl}-planet exoplanet model...")
-        _, idatas[f"{n_pl}pl"] = sample_xo(build_xo_model(df, gs, offs), draws=1000, tune=1000)
-        w = az.waic(idatas[f"{n_pl}pl"])
-        comp_tab.loc[n_pl, "elpd_waic"] = w.elpd_waic
-        comp_tab.loc[n_pl, "waic_se"] = w.se
-    print(az.compare(idatas, ic="waic"))
-    print("Higher elpd_waic is better; compare the difference with its standard error (dse).")
+        print(f"Sampling {n_pl}-planet jaxoplanet model...")
+        cmp_args, cmp_init, _ = jx_inputs(df, gs, offs)
+        cmp_mcmc = jx_sample(cmp_args, jx_map(cmp_args, cmp_init), draws=1000, tune=1000)
+        elpd, se = waic(cmp_mcmc, cmp_args)
+        comp_tab.loc[n_pl, "elpd_waic"] = elpd
+        comp_tab.loc[n_pl, "waic_se"] = se
+    comp_tab["d_elpd_vs_prev"] = comp_tab["elpd_waic"].diff()
+    print(comp_tab[["elpd_waic", "waic_se", "d_elpd_vs_prev"]].round(2))
+    print("Higher elpd_waic is better; a gain of several times the SE favours the larger model.")
+
 
 # %%
 #######################
