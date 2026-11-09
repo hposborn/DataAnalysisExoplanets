@@ -40,7 +40,7 @@ plt.rcParams.update({"figure.dpi": 110, "axes.grid": True, "grid.alpha": 0.3})
 rng = np.random.default_rng(42)
 
 HOST = "TOI-270"
-SMINT_DIR = Path(os.environ.get("SMINT_DIR", "smint"))
+SMINT_DIR = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())),"smint")
 MODELS = str(SMINT_DIR / "example" / "smint_models") + "/"
 EXOMDN_DIR = Path(os.environ.get("EXOMDN_DIR", "ExoMDN"))
 OUTDIR = Path("interiors_outputs") / "subneptunes"

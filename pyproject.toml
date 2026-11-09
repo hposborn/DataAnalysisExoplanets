@@ -25,6 +25,7 @@ dependencies = [
     "numpy>=2.5.1",
     "numpyro>=0.22.0",
     "pandas>=3.0.3",
+    "planetsynth>=1.0.4",
     "pymc>=6.3.2",
     "pytransit>=2.9.2",
     "radvel>=1.6.7",
