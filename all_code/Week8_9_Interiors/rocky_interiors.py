@@ -34,6 +34,8 @@ Key idea for students
 # IMPORTS AND SETTINGS
 #######################
 import os
+os.environ['SMINT_DIR']="../smint"
+
 import urllib.parse
 from pathlib import Path
 
@@ -101,8 +103,6 @@ print(planets.round(3).to_string(index=False))
 # smint ships the rocky models of Zeng et al. (2016) merged into the Aguichine et al. (2021)
 # grid. Axes: f'core (iron fraction of the iron + rock part), irradiation temperature,
 # water mass fraction and log10(mass). With no water, f'core is the core mass fraction (CMF).
-import os
-os.environ['SMINT_DIR']="../smint"
 from smint import fit_cmf
 
 interp_r = fit_cmf.make_interpolator_A21(MODELS + "Aguichine2021/withZengRocky/")
@@ -261,6 +261,7 @@ if RUN_SMINT_WATER:
 # ExoMDN is a neural network trained on ~5.6 million interior models. Given mass, radius
 # and Teq (with errors) it returns samples of the mass fractions of the iron core, the
 # silicate mantle, a water layer and an H/He atmosphere, in about a second.
+
 if RUN_EXOMDN:
     from exomdn import ExoMDN
 

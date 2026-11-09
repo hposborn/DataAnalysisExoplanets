@@ -20,9 +20,9 @@ Steps
     (Optional) GASTLI (Acuña et al. 2024): coupled interior-atmosphere retrieval
 
 Setup (uv)
-    git clone https://github.com/tiny-hippo/planetsynth.git
+    git clone https://github.com/tiny-hippo/planetsynth.git all_code/planetsynth
     uv add numpy scipy pandas matplotlib emcee corner
-    uv add ./planetsynth
+    uv add all_code/planetsynth
   Optional GASTLI (needs a Fortran compiler, e.g. 'brew install gcc' or 'apt install gfortran'):
     uv add gastli h5py
     Download the GASTLI input data (link in the GASTLI installation docs:
@@ -143,7 +143,7 @@ for _, p in planets.iterrows():
 # SciPy versions do not work with current SciPy, so we rebuild the interpolator from the
 # stored grid and values (same data, same method).
 from scipy.interpolate import RegularGridInterpolator
-from planetsynth import PlanetSynth
+from planetsynth.planetsynth import PlanetSynth
 
 pls = PlanetSynth(verbose=False)
 _stored = pls.reg.__dict__

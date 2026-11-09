@@ -41,7 +41,8 @@ rng = np.random.default_rng(42)
 
 HOST = "TOI-270"
 SMINT_DIR = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())),"smint")
-MODELS = str(SMINT_DIR / "example" / "smint_models") + "/"
+print(SMINT_DIR)
+MODELS = SMINT_DIR +"/example/smint_models/"
 EXOMDN_DIR = Path(os.environ.get("EXOMDN_DIR", "ExoMDN"))
 OUTDIR = Path("interiors_outputs") / "subneptunes"
 OUTDIR.mkdir(parents=True, exist_ok=True)
