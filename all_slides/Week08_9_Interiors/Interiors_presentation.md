@@ -19,12 +19,20 @@ title: "Project 4 - Interiors"
 
 ## Planet formation
 
+[i=chondrite_solar_abundances_3_02-1426789982.jpg]
+
 - The **elemental abundances** of material in the disc should be **identical to the star**.[+]
   - We see similar elemental abundance ratios (Fe, Si, Mg, etc) across all terrestrial planets.[+]
 - Solid dust grains lack H, He, Ne, Ar, etc[+]
+
+-v-
+
+## Planet formation
+
 - **Dust composition is modified with orbital distance** due to sublimation & condensation of volatiles at ice lines (H$_2$O, but also CO$_2$, CH$_4$, etc).[+]
   - Close-in material is only rocky (Fe, Mg, Si, O)[+]
   - Dust in distant regions is more volatile-dominated (C, N, S, O).[+]
+
 
 -v-
 
@@ -60,7 +68,7 @@ title: "Project 4 - Interiors"
 ## Migration
 
 - Planets peturb the disc around them, but as there is more dust outside this leads to a deceleration of the planet causing migration inwards.[+]
-  - This can be rapid ($\ltapprox 1$Myr), especially for large ($1-20M_\oplus$) planets [+]
+  - This can be rapid ($\lessapprox 1$Myr), especially for large ($1-20M_\oplus$) planets [+]
 
 - Giant planets ($>0.1M_J$) are large enough to open a gap in the disc, but torques with the gap edge still lead to (slower) inward migration[+]
 - Other planets can cause large influence on planetary position:[+]
@@ -90,7 +98,7 @@ title: "Project 4 - Interiors"
   - **Silicates** (sometimes considered with Iron for simplicity)[+]
   - **Volatiles** (dominated by water, especially for formation $<5$AU; sometimes assume equal parts ice:rock)[+]
   - **Gas** (H & He; can be assumed to be protosolar ratio, i.e. 27% He by mass)[+]
-- **Small planets** ($\lessapprox15M_\oplus$) are dominated by material from **dust**, and:[+]
+- **Small planets** ($\lessapprox 15M_\oplus$) are dominated by material from **dust**, and:[+]
   - Orbital distance of formation determines **volatile content**[+]
   - Stellar abundances determine iron/rock content (e.g. core-mass fraction, CMF)[+]
 - Large planets are dominated by **H-He gas**[+]
@@ -232,9 +240,9 @@ title: "Project 4 - Interiors"
 - Metallicity can be measured in two ways:[+]
 - As a **mass ratio** with respect to solar values, denoted by $Z$[+]
   - $\log{Z}=1$ means 10x solar metallicity - atmospere is 95% H-He and ~5% metals[+]
-  - $\log{Z}\lessapprox1.85$ given solar metal mass fraction is $Z\approx0.014$[+]
+  - $\log{Z}\lessapprox 1.85$ given solar metal mass fraction is $Z\approx0.014$[+]
 - As a **log number ratio** with respect to hydrogen (normalised to the Sun):[+]
-  - $[\text{M}/\text{H}] \equiv \log_{10}\left(\frac{N_{\text{metals}}}{N_{\text{H}}}\right)_{\text{planet}} - \log_{10}\left(\frac{N_{\text{metals}}}{N_{\text{H}}}\right)_{\odot}$[+]
+  - $ [\text{M}/\text{H}] \equiv \log_{10}\left(\frac{N_{\text{metals}}}{N_{\text{H}}}\right)_{\text{planet}} - \log_{10}\left(\frac{N_{\text{metals}}}{N_{\text{H}}}\right)_{\odot} $ [+]
   - An atmosphere with 33% water (by mass) has $M/H=70x$ or $[M/H]=1.84$[+]
   - Mars' CO$_2$ dominated atmosphere has $[M/H]>4$ (>10000x solar).[+]
 - Metallicities can also be normalised to stellar (rather than solar) values.[+]
@@ -309,5 +317,6 @@ title: "Project 4 - Interiors"
 ---
 
 [P "Extra Resources"]
+
 - [Interior and Evolution of the Giant Planets - Yamila Miguel](https://arxiv.org/html/2302.07656v1)
 - [Fundamentals of interior modelling and challenges in the interpretation of observed rocky exoplanets](https://arxiv.org/pdf/2511.10269)
